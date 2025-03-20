@@ -21,15 +21,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/travel/page.js"
     ],
-    "/dashboard/page": [
+    "/calculator/home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/page.js"
+      "static/chunks/app/calculator/home/page.js"
     ],
-    "/calculator/page": [
+    "/calculator/shopping/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/page.js"
+      "static/chunks/app/calculator/shopping/page.js"
     ]
   }
 }
