@@ -26,21 +26,13 @@ export default function Dashboard(){
         <Box>
             <Box className="m-2">
                 <Typography variant="h4" margin={2}>
-                    Your Footprint
+                    Your Footprint: 1200 kg CO₂ 
                 </Typography>
                 <Box sx={{
                     margin: "2rem",
                     display: "flex",
                     gap: "2rem"
                 }}>
-                <Card>
-                    <Typography sx={{ padding: "1rem"}}>Total CO₂ Emissions:</Typography>
-                    <CardContent>
-                    <Typography sx={{ margin: "1rem", color: 'text.secondary', fontSize: 14 }}>
-                         1200 kg CO₂ 
-                    </Typography>
-                    </CardContent>
-                </Card>
                 {/* Emissions Over Time */}
                 <Card>
                 <Typography sx={{ padding: "1rem"}}>Emissions Over Time:</Typography>
