@@ -11,25 +11,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/layout.js"
     ],
-    "/calculator/travel/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/calculator/travel/page.js"
-    ],
     "/calculator/food/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/food/page.js"
     ],
-    "/calculator/home/page": [
+    "/calculator/travel/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/home/page.js"
-    ],
-    "/calculator/shopping/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/calculator/shopping/page.js"
+      "static/chunks/app/calculator/travel/page.js"
     ],
     "/dashboard/page": [
       "static/chunks/webpack.js",

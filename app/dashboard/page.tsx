@@ -26,7 +26,7 @@ export default function Dashboard(){
         <Box>
             <Box className="m-2">
                 <Typography variant="h4" margin={2}>
-                    Your Footprint: 1200 kg CO₂ 
+                    Your Footprint: 120 kg CO₂ 
                 </Typography>
                 <Box sx={{
                     margin: "2rem",

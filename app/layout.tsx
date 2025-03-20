@@ -11,6 +11,7 @@ import {
   type Session,
   type Navigation,
 } from '@toolpad/core/AppProvider';
+import CalculatorProvider from "./contexts/CalculatorContext";
 
 
 export default function RootLayout({
@@ -70,7 +71,11 @@ export default function RootLayout({
               title: 'CARBON FOOTPRINT TRACKER',
             }}
           >
-            <DashboardLayout>{children}</DashboardLayout>
+            <DashboardLayout>
+            <CalculatorProvider>
+              {children}
+            </CalculatorProvider>
+            </DashboardLayout>
           </NextAppProvider>
         </body>
       </html>
