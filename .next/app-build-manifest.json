@@ -11,15 +11,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/layout.js"
     ],
-    "/calculator/food/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/calculator/food/page.js"
-    ],
     "/calculator/travel/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/travel/page.js"
+    ],
+    "/calculator/food/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/calculator/food/page.js"
     ],
     "/calculator/home/page": [
       "static/chunks/webpack.js",
