@@ -3,32 +3,7 @@ import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { useCalculator } from "../../contexts/CalculatorContext";
-
-const homeQuestionnaire = [{
-    "question": "What kind of house do you live in?",
-    "options": ["Detached", "Semi detached", "terrace", "Flat"]
-},
-{
-    "question": "How many bedrooms does your house have?",
-    "options": ["1", "2", "3", " 4 or more"]
-},
-{
-    "question": "How many people (aged 17 and over) live in your house?",
-    "options": ["1", "2", "3", " 4 or more"]
-},
-{
-    "question": "How do you heat your home?",
-    "options": ["Gas", "Oil", "Electricity", "Wood"]
-},
-{
-    "question": "Do you regularly turn off lights and not leave your appliances on standby?",
-    "options": ["Yes", "No"]
-},
-{
-    "question": "How warm do you keep your home in winter?",
-    "options": ["below 14 degree", "14 - 17 degree c", "18-21 degree c", "over 21 degree c"]
-}
-];
+import { Questionnaire } from "../../utils/mockQuestionnaire";
 
 export default function HomeQuestionnaire(){
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -64,11 +39,11 @@ export default function HomeQuestionnaire(){
         </Box>
          <Box sx={{ bgcolor: "rgb(255, 255, 255)", width: "600px"}}>
             <Box sx={{ margin: "1rem" }}>
-                <Typography sx={{ fontSize: "1.4rem"}}>{homeQuestionnaire[currentQuestionIndex].question}</Typography>
+                <Typography sx={{ fontSize: "1.4rem"}}>{Questionnaire['home'][currentQuestionIndex].question}</Typography>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column"}}>
             {
-                homeQuestionnaire[currentQuestionIndex].options.map((option, index) => (
+                Questionnaire['home'][currentQuestionIndex].options.map((option, index) => (
                     <Button 
                       sx={{ 
                         margin: "0.5rem", 
@@ -85,7 +60,7 @@ export default function HomeQuestionnaire(){
                       onClick={()=>{setHomeQuestionnaireAnswers(prev=>[...prev, option]); onNextClick()}}
                     >
                       <Typography>
-                        {option}
+                        {option.label}
                       </Typography>
                     </Button>
                 ))

@@ -1,45 +1,54 @@
 "use client"
 import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCalculator } from "../../contexts/CalculatorContext";
+import DoneIcon from '@mui/icons-material/Done';
+import { getNextQuestion, getPreviousQuestion } from "../../utils/helper_functions";
+import { Questionnaire } from "../../utils/mockQuestionnaire";
 
-const foodQuestionnaire = [{
-    "question": "How would you best describe your diet?",
-    "options": ["Vegeterian", "Non-Vegeterian", "Eggeterian", "Vegan"]
-},
-{
-    "question": "In a week, how much do you spend on food from restaurants, canteens and takeaways?",
-    "options": ["0$", "1$-10$", "10$-50$", "More than 50$"]
-},
-{
-    "question": "Of the food you buy how much is wasted and thrown away?",
-    "options": ["None", "0%-10%", "10%-30%", "More than 30$"]
-},
-{
-    "question": "How often do you buy locally produced food that is not imported to the UK?",
-    "options": ["Local market", "Food mart", "Both"]
-}
-];
 
 export default function Food(){
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [foodAnswers, setFoodAnswers] = useState([]);
+    const [currentQuestion, setCurrentQuestion] = useState(Questionnaire['food'][0]);
+    const [selectedOptions, setSelectedOptions] = useState<{
+        id: string,
+        value: string,
+        nextQuestionId: string,
+        prevQuestionId: string,
+    }[]>(null);
     const router = useRouter();
     const { foodProgressPer, setFoodProgressPer } = useCalculator();
+    const [doneIconId, setDoneIconId] = useState<{index: string, isDone: boolean}| any>({});
+    const [qNo, setQNo] = useState(1);
+    const [optionNotSelectederr, setOptionNotSelectedErr] = useState("");
+    const [submitError, setSubmitError] = useState(false);
 
     const onNextClick = () => {
-        setFoodProgressPer(prevVal => prevVal+ 25)
-        if(currentQuestionIndex >= 3) {
-            router.push('/calculator/travel');
+        const currentSelectedOption = selectedOptions && selectedOptions.find(opt => opt.id === currentQuestion.id)
+        if(!selectedOptions || !currentSelectedOption){
+            setSubmitError(true);
+            setOptionNotSelectedErr("Please select one option");
         }else{
-            setCurrentQuestionIndex((prevIndex) => prevIndex+1);
+            setSubmitError(false);
+            if(currentQuestion.id === "q4") {
+                router.push('/calculator/travel');
+            }
+            else{
+                const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
+                const nextQuestion = getNextQuestion(Questionnaire['food'], currentQuestion, currentSelectedOption);
+                setCurrentQuestion(nextQuestion);
+                setQNo(prev => prev+1);
+            }
+            setFoodProgressPer(prevVal => prevVal+ 25);
         }
         
     }
     const onPrevClick = () => {
         setFoodProgressPer(prevVal => prevVal - 25);
-        setCurrentQuestionIndex((prev) => prev-1);
+        const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
+        const prevQuestionId = getPreviousQuestion(Questionnaire['food'], currentQuestion, currentSelectedOption);
+        setCurrentQuestion(prevQuestionId);
+        setQNo(prev => prev-1);
     }
     return (
         <Box
@@ -51,42 +60,65 @@ export default function Food(){
          }}
         >
         <Box sx={{ margin: "2rem", width: "100%"}}>
-            <Typography sx={{fontSize: "1.35rem", fontFamily: "serif", fontWeight: "500"}}>{`FOOD  Q${currentQuestionIndex+1} of Q`}</Typography>
+            <Typography sx={{fontSize: "1.35rem", fontFamily: "serif", fontWeight: "500"}}>
+                {`FOOD  Q${qNo} of Q`}</Typography>
           <LinearProgress variant="determinate" value={foodProgressPer} />
         </Box>
          <Box sx={{ bgcolor: "rgb(255, 255, 255)", width: "600px"}}>
             <Box sx={{ margin: "1rem" }}>
-                <Typography sx={{ fontSize: "1.4rem"}}>{foodQuestionnaire[currentQuestionIndex].question}</Typography>
+                <Typography sx={{ fontSize: "1.4rem"}}>{currentQuestion.question}</Typography>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column"}}>
             {
-                foodQuestionnaire[currentQuestionIndex].options.map((option, index) => (
+                currentQuestion.options.map((option, index) => (
                     <Button 
                       sx={{ 
                         margin: "0.5rem", 
                         padding:"1rem", 
                         bgcolor: "black", 
                         color: "white",
-                        '&:hover': {
+                        '&:focus': {
                             backgroundColor: "white",
                             border: "1px solid black",
                             color: "black"
                         } 
                       }} 
                       key={index}
-                      onClick={()=>{setFoodAnswers(prev=>[...prev, option]); onNextClick()}}
+                      onClick={()=>{setSelectedOptions((prevSelected) => {
+                        const newAnswerSet = Array.isArray(prevSelected) ? [...prevSelected] : [];
+                        const existingQAnsIndex = newAnswerSet.findIndex((qAns)=> qAns.id === currentQuestion.id);
+                        const updatedAnswer = {
+                            id: currentQuestion.id,
+                            value: option.value,
+                            nextQuestionId: option.nextQuestionId,
+                            prevQuestionId: option.prevQuestionId,
+                        };
+                        if(existingQAnsIndex !== -1){
+                            newAnswerSet[existingQAnsIndex] = updatedAnswer;
+                        }else {
+                            newAnswerSet.push(updatedAnswer);
+                        }
+                        return newAnswerSet;
+                      })}}
+                    //   onFocus={()=>setDoneIconId((prev)=>({
+                    //     ...prev,
+                    //     index: currentQuestion.options.indexOf((currentOption as {value: any}).value),
+                    //     isDone: true
+                    //   }))}
                     >
+                      {doneIconId[index] && <DoneIcon />}
                       <Typography>
-                        {option}
+                        {option.label}
                       </Typography>
                     </Button>
                 ))
             }
             </Box>
             <Box sx={{ margin: "1rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
-                <Button sx={{paddingX: "1rem"}} variant="outlined" onClick={()=>onPrevClick()} disabled={currentQuestionIndex < 1}>Back</Button>
+                <Button sx={{paddingX: "1rem"}} variant="outlined" onClick={()=>onPrevClick()} disabled={currentQuestion.id === "q1"}>Back</Button>
                 <Button variant="contained" sx={{ paddingX: "1rem"}} onClick={()=>onNextClick()}>Next</Button>
             </Box>
+            {submitError && <Typography sx={{ padding: "1rem", textAlign: "center"}}>{optionNotSelectederr}</Typography>}
          </Box>
         </Box>
     )

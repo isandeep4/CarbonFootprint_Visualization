@@ -2,128 +2,95 @@
 import { Box, Button, LinearProgress, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useCalculator } from "../../contexts/CalculatorContext";
+import { getNextQuestion, getPreviousQuestion } from "../../utils/helper_functions";
+import { Questionnaire } from "../../utils/mockQuestionnaire";
 
-const travelQuestionnaire = [
-{
-    id: "q1",
-    question: "What kind of vehicle do you travel in most often as driver or passenger? (if any)?",
-    options: [
-        {label: "Car", value: "car", nextQuestionId: "q2", prevQuestionId: null},
-        {label: "Motorbike", value: "motorbike", nextQuestionId: "q3", prevQuestionId: null},
-        {label: "Public transport", value: "public_transport", nextQuestionId: "q4", prevQuestionId: null},
-        {label: "Walk or Cycle", value: "walk_cycle", nextQuestionId: "q4", prevQuestionId: null},
-    ],
-    answerType: "select"
-},
-{
-    id: "q2",
-    question: "What is your car's fuel type?",
-    options: [
-        { label: "Petrol", value: "petrol", nextQuestionId: "q3", prevQuestionId: "q1"},
-        { label: "Electric", value: "electric", nextQuestionId: "q3", prevQuestionId: "q1" },
-        { label: "Diesel", value: "diesel", nextQuestionId: "q3", prevQuestionId: "q1" },
-        { label: "Hybrid", value: "hybrid", nextQuestionId: "q3", prevQuestionId: "q1" },
-    ],
-    answerType: "select"
-},
-{
-    id: "q3",
-    question: "How many hours a week do you spend in your car or on your motorbike for personal use including commuting?",
-    options: [
-        { label: "Under 2 hours", value: "2hrs", nextQuestionId: "q5", prevQuestionId: "q2" },
-        { label: "2 to 5 hours", value: "2to5hrs", nextQuestionId: "q5", prevQuestionId: "q2" },
-        { label: "5 to 15 hours", value: "5to15hrs", nextQuestionId: "q5", prevQuestionId: "q2" },
-        { label: "15 to 25 hours", value: "15to25hrs", nextQuestionId: "q5", prevQuestionId: "q2" },
-        { label: "Over 25 hours", value: "25hrs", nextQuestionId: "q5" },
-    ],
-    answerType: "select"
-},
-{
-    id: "q4",
-    question: "How many hours a week do you spend on the train for personal use including commuting?",
-    options: [
-        { label: "I don't travel by train", value: "2hrs", nextQuestionId: "q5", prevQuestionId: "q1" },
-        { label: "under 2 hours", value: "2to5hrs", nextQuestionId: "q5", prevQuestionId: "q1" },
-        { label: "2 to 5 hours", value: "5to15hrs", nextQuestionId: "q5", prevQuestionId: "q1" },
-        { label: "5 to 15 hours", value: "15to25hrs", nextQuestionId: "q5", prevQuestionId: "q1" },
-        { label: "15 to 25 hours", value: "25hrs", nextQuestionId: "q5", prevQuestionId: "q1" },
-        { label: "Over 25 hours", value: "25hrs", nextQuestionId: "q5", prevQuestionId: "q1"}
-    ],
-    answerType: "select"
-},
-{
-    id: "q5",
-    question: "In the last year, how many return flights have you made in total to the following locations?",
-    options: [
-        { label: "Domestic (UK / Ireland)", value: "domestic", nextQuestionId: "q6", prevQuestionId: "q4" },
-        { label: "To/from Europe", value: "continent", nextQuestionId: "q6", prevQuestionId: "q4" },
-        { label: "To/from outside Europe", value: "international", nextQuestionId: "q6", prevQuestionId: "q4" },
-    ],
-    answerType: "textField"
-},
-{
-    id: "q6",
-    question: "What percentage of your flights do you offset?",
-    options: [
-        { label: "None of them", value: "none", nextQuestionId: null, prevQuestionId: "q5" },
-        { label: "25%", value: "25%", nextQuestionId: null, prevQuestionId: "q5" },
-        { label: "50%", value: "50%", nextQuestionId: null, prevQuestionId: "q5" },
-        { label: "75%", value: "75%", nextQuestionId: null, prevQuestionId: "q5" },
-        { label: "All of them", value: "all", nextQuestionId: null, prevQuestionId: "q5" },
-    ],
-    answerType: "select"
-},
-];
-const getNextQuestion = (currentQuestion, optionSelected?) => {
-    if(optionSelected){
-        const nextQuestionId = currentQuestion.options.find(opt => opt.value === optionSelected.value)?.nextQuestionId;
-        return travelQuestionnaire.find(qns => qns.id === nextQuestionId)
-    }else{
-        return travelQuestionnaire.find(qns => qns.id === currentQuestion.options[0]?.nextQuestionId)
-    }
-}
-const getPreviousQuestion = (currentQuestion, optionSelected) => {
-    return currentQuestion.options.find(opt => opt.value === optionSelected)?.prevQuestionId;
-}
 
 export default function TravelQuestionnaire(){
-    const [currentQuestion, setCurrentQuestion] = useState(travelQuestionnaire[0]);
+    const [currentQuestion, setCurrentQuestion] = useState(Questionnaire['travel'][0]);
     const router = useRouter();
     const [optionNotSelectederr, setOptionNotSelectedErr] = useState("");
     const [submitError, setSubmitError] = useState(false);
-    const [currentOption, setCurrentOption] = useState<{
-        label: string,
-        value: string,
+    const [selectedOptions, setSelectedOptions] = useState<{
+        id: string,
+        value: string |  {},
         nextQuestionId: string,
-        prevQuestionId: string} | {}>({});
+        prevQuestionId: string,
+    }[]>(null);
     const [qNo, setQNo] = useState(1)
     const [textFieldAnswers, setTextFieldAnswers] = useState<{[key: string]: string}>({})
-
-    useEffect(()=>{
-        if((currentOption as {nextQuestionId: string}).nextQuestionId === null) {
-            return router.push('/calculator/home');
-        }
-        if(currentOption.hasOwnProperty("value")) {
-            const nextQuestion = getNextQuestion(currentQuestion, currentOption);
-            setCurrentQuestion(nextQuestion);
-            setQNo(prev => prev+1);
-        }
-    }, [currentOption])
     
     const onNextClick = () => {
-        if(!currentOption && !Object.keys(textFieldAnswers).length){
+        const currentSelectedOption = selectedOptions && selectedOptions.find(opt => opt.id === currentQuestion.id);
+        if(currentQuestion.answerType === "select" && (!selectedOptions || !currentSelectedOption)){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
-            return;
+        }else if (currentQuestion.answerType === "textField" && Object.keys(textFieldAnswers).length !== 3){
+            setSubmitError(true);
+            setOptionNotSelectedErr("Please provide one or more input");
         }
-        const nextQuestion = getNextQuestion(currentQuestion);
-        setCurrentQuestion({id: nextQuestion.id, question: nextQuestion.question ,options: nextQuestion.options, answerType: nextQuestion.answerType });
-        setQNo(prev => prev+1);  
+        else{
+            setSubmitError(false);
+            if(currentQuestion.answerType === "select"){
+                if(currentQuestion.id === "q6") {
+                    return router.push('/calculator/home');
+                }
+                else{
+                    const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
+                    const nextQuestion = getNextQuestion(Questionnaire["travel"], currentQuestion, currentSelectedOption);
+                    setCurrentQuestion({id: nextQuestion.id, question: nextQuestion.question ,options: nextQuestion.options, answerType: nextQuestion.answerType });
+                    setQNo(prev => prev+1);  
+                }
+            }
+            else {
+              setSelectedOptions((prevAnswers)=>{
+                const updatedAnswers = [...prevAnswers];
+                const textFieldQuestionId = updatedAnswers.findIndex(ans => ans.id === currentQuestion.id);
+                const updateTextfield = {
+                    id: currentQuestion.id,
+                    value: textFieldAnswers,
+                    nextQuestionId: currentQuestion.options[0].nextQuestionId,
+                    prevQuestionId: currentQuestion.options[0].prevQuestionId,
+                }
+                if(textFieldQuestionId !== -1){
+                    updatedAnswers[textFieldQuestionId] = updateTextfield;
+                }else{
+                    updatedAnswers.push(updateTextfield)
+                }
+                return updatedAnswers
+            })
+              const nextQuestion = getNextQuestion(Questionnaire["travel"], currentQuestion);
+              setCurrentQuestion({id: nextQuestion.id, question: nextQuestion.question ,options: nextQuestion.options, answerType: nextQuestion.answerType });
+              setQNo(prev => prev+1);  
+            }
+        }
      }
     const onPrevClick = () => {
-        const prevQuestionId = getPreviousQuestion(currentQuestion, currentOption)
+        if(currentQuestion.id === "q1") {
+            return router.push('/calculator/food');
+        }else{
+            const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
+        const prevQuestionId = getPreviousQuestion(Questionnaire['travel'], currentQuestion, currentSelectedOption)
         setCurrentQuestion(prevQuestionId);
+        }
+    }
+    const onOptionClick = (option) =>{
+        setSelectedOptions((prevSelected) => {
+            const newAnswerSet = Array.isArray(prevSelected) ? [...prevSelected] : [];
+            const existingQAnsIndex = newAnswerSet.findIndex((qAns)=> qAns.id === currentQuestion.id);
+            const updatedAnswer = {
+                id: currentQuestion.id,
+                value: option.value,
+                nextQuestionId: option.nextQuestionId,
+                prevQuestionId: option.prevQuestionId,
+            };
+            if(existingQAnsIndex !== -1){
+                newAnswerSet[existingQAnsIndex] = updatedAnswer;
+            }else {
+                newAnswerSet.push(updatedAnswer);
+            }
+            return newAnswerSet;
+          })
     }
     return (
         <Box
@@ -152,14 +119,14 @@ export default function TravelQuestionnaire(){
                         padding:"1rem", 
                         bgcolor: "black", 
                         color: "white",
-                        '&:hover': {
+                        '&:focus': {
                             backgroundColor: "white",
                             border: "1px solid black",
                             color: "black"
                         } 
                       }} 
                       key={index}
-                      onClick={()=>setCurrentOption(option)}
+                      onClick={()=>onOptionClick(option)}
                     >
                       <Typography>
                         {option.label}
@@ -185,10 +152,10 @@ export default function TravelQuestionnaire(){
             }
             </Box>
             <Box sx={{ margin: "1rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
-                <Button sx={{paddingX: "1rem"}} variant="outlined" onClick={()=>onPrevClick()} disabled={currentQuestion?.id === null}>Back</Button>
+                <Button sx={{paddingX: "1rem"}} variant="outlined" onClick={()=>onPrevClick()}>Back</Button>
                 <Button variant="contained" sx={{ paddingX: "1rem"}} onClick={()=>onNextClick()}>Next</Button>
             </Box>
-            {submitError && <p>{optionNotSelectederr}</p>}
+            {submitError && <Typography sx={{ padding: "1rem", textAlign: "center"}}>{optionNotSelectederr}</Typography>}
          </Box>
         </Box>
     )

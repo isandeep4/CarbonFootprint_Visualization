@@ -1,6 +1,7 @@
 {
-  "/calculator/home/page": "app/calculator/home/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
   "/calculator/food/page": "app/calculator/food/page.js",
-  "/calculator/shopping/page": "app/calculator/shopping/page.js",
-  "/calculator/travel/page": "app/calculator/travel/page.js"
+  "/calculator/home/page": "app/calculator/home/page.js",
+  "/calculator/travel/page": "app/calculator/travel/page.js",
+  "/calculator/shopping/page": "app/calculator/shopping/page.js"
 }
