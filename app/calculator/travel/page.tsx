@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getNextQuestion, getPreviousQuestion } from "../../utils/helper_functions";
 import { Questionnaire } from "../../utils/mockQuestionnaire";
+import { AnswerI, QuestionnaireI, useCalculator } from "../../contexts/CalculatorContext";
 
 
 export default function TravelQuestionnaire(){
@@ -11,86 +12,73 @@ export default function TravelQuestionnaire(){
     const router = useRouter();
     const [optionNotSelectederr, setOptionNotSelectedErr] = useState("");
     const [submitError, setSubmitError] = useState(false);
-    const [selectedOptions, setSelectedOptions] = useState<{
+    const [selectedOption, setSelectedOption] = useState<{
         id: string,
-        value: string |  {},
+        value: string |  {[key: string]: string},
         nextQuestionId: string,
         prevQuestionId: string,
-    }[]>(null);
+    }>(null);
     const [qNo, setQNo] = useState(1)
-    const [textFieldAnswers, setTextFieldAnswers] = useState<{[key: string]: string}>({})
+    const { foodProgressPer, setFoodProgressPer, questionnaireContext, setQuestionnaireContext  } = useCalculator();
+
+    const resetSubmittedAnswer = () => {
+        setSelectedOption(null);
+    };
     
     const onNextClick = () => {
-        const currentSelectedOption = selectedOptions && selectedOptions.find(opt => opt.id === currentQuestion.id);
-        if(currentQuestion.answerType === "select" && (!selectedOptions || !currentSelectedOption)){
+        if(!selectedOption){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
-        }else if (currentQuestion.answerType === "textField" && Object.keys(textFieldAnswers).length !== 3){
+        }else if (currentQuestion.answerType === "textField" && Object.keys(selectedOption.value).length !== 3){
             setSubmitError(true);
             setOptionNotSelectedErr("Please provide one or more input");
         }
         else{
             setSubmitError(false);
-            if(currentQuestion.answerType === "select"){
-                if(currentQuestion.id === "q6") {
-                    return router.push('/calculator/home');
-                }
-                else{
-                    const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
-                    const nextQuestion = getNextQuestion(Questionnaire["travel"], currentQuestion, currentSelectedOption);
-                    setCurrentQuestion({id: nextQuestion.id, question: nextQuestion.question ,options: nextQuestion.options, answerType: nextQuestion.answerType });
-                    setQNo(prev => prev+1);  
-                }
-            }
-            else {
-              setSelectedOptions((prevAnswers)=>{
-                const updatedAnswers = [...prevAnswers];
-                const textFieldQuestionId = updatedAnswers.findIndex(ans => ans.id === currentQuestion.id);
-                const updateTextfield = {
-                    id: currentQuestion.id,
-                    value: textFieldAnswers,
-                    nextQuestionId: currentQuestion.options[0].nextQuestionId,
-                    prevQuestionId: currentQuestion.options[0].prevQuestionId,
-                }
-                if(textFieldQuestionId !== -1){
-                    updatedAnswers[textFieldQuestionId] = updateTextfield;
-                }else{
-                    updatedAnswers.push(updateTextfield)
-                }
-                return updatedAnswers
+            setQuestionnaireContext((prevQuestionnaire: QuestionnaireI)=>{
+                const newQuestionnaireSet = { ...prevQuestionnaire};
+                const travelQuestionnaireSet: AnswerI[] = [...(newQuestionnaireSet['travel'] || [])];
+                    const updatedAnswer: AnswerI = {
+                        qId: currentQuestion.id,
+                        question: currentQuestion.question,
+                        answer: selectedOption.value
+                    };
+                    const existingTravelQId = travelQuestionnaireSet.findIndex(tr => tr.qId === currentQuestion.id);
+                    if(existingTravelQId !== -1){
+                        travelQuestionnaireSet[existingTravelQId] = updatedAnswer;
+                    }else {
+                        travelQuestionnaireSet.push(updatedAnswer);
+                    }
+                    
+                return {
+                    ...newQuestionnaireSet,
+                    travel: travelQuestionnaireSet
+                };
             })
-              const nextQuestion = getNextQuestion(Questionnaire["travel"], currentQuestion);
-              setCurrentQuestion({id: nextQuestion.id, question: nextQuestion.question ,options: nextQuestion.options, answerType: nextQuestion.answerType });
+            if(currentQuestion.id === "q6") {
+                return router.push('/calculator/home');
+            } else {
+              const nextQuestion = currentQuestion.answerType === "select" ? 
+                getNextQuestion(Questionnaire["travel"], currentQuestion, selectedOption) :
+                getNextQuestion(Questionnaire["travel"], currentQuestion);
+                setCurrentQuestion({
+                    id: nextQuestion.id, 
+                    question: nextQuestion.question ,
+                    options: nextQuestion.options, 
+                    answerType: nextQuestion.answerType 
+                });
               setQNo(prev => prev+1);  
             }
         }
+        resetSubmittedAnswer();
      }
     const onPrevClick = () => {
         if(currentQuestion.id === "q1") {
             return router.push('/calculator/food');
         }else{
-            const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
-        const prevQuestionId = getPreviousQuestion(Questionnaire['travel'], currentQuestion, currentSelectedOption)
+        const prevQuestionId = getPreviousQuestion(Questionnaire['travel'], currentQuestion, selectedOption)
         setCurrentQuestion(prevQuestionId);
         }
-    }
-    const onOptionClick = (option) =>{
-        setSelectedOptions((prevSelected) => {
-            const newAnswerSet = Array.isArray(prevSelected) ? [...prevSelected] : [];
-            const existingQAnsIndex = newAnswerSet.findIndex((qAns)=> qAns.id === currentQuestion.id);
-            const updatedAnswer = {
-                id: currentQuestion.id,
-                value: option.value,
-                nextQuestionId: option.nextQuestionId,
-                prevQuestionId: option.prevQuestionId,
-            };
-            if(existingQAnsIndex !== -1){
-                newAnswerSet[existingQAnsIndex] = updatedAnswer;
-            }else {
-                newAnswerSet.push(updatedAnswer);
-            }
-            return newAnswerSet;
-          })
     }
     return (
         <Box
@@ -126,7 +114,12 @@ export default function TravelQuestionnaire(){
                         } 
                       }} 
                       key={index}
-                      onClick={()=>onOptionClick(option)}
+                      onClick={()=> setSelectedOption({
+                        id: currentQuestion.id,
+                        value: option.value,
+                        nextQuestionId: option.nextQuestionId,
+                        prevQuestionId: option.prevQuestionId,
+                      })}
                     >
                       <Typography>
                         {option.label}
@@ -141,7 +134,27 @@ export default function TravelQuestionnaire(){
                       variant="standard"
                       label={opt.label}
                       type="number"
-                      onChange={(e)=>setTextFieldAnswers(prev => ({...prev, [opt.value]: e.target.value}))}
+                      onChange={(e)=>setSelectedOption(prev => {
+                        const updatedTextFieldOption = {...prev};
+                        const existingQId = updatedTextFieldOption.id === currentQuestion.id;
+                        if(existingQId){
+                            const updateTextFieldValue = {
+                                ...(updatedTextFieldOption.value as {[key: string]: string}),
+                                [opt.value]: e.target.value
+                            };
+                            updatedTextFieldOption.value = updateTextFieldValue;
+                            return updatedTextFieldOption;
+                        }else {
+                            return {
+                                id: currentQuestion.id,
+                                value: {
+                                    [opt.value]: e.target.value
+                                },
+                                nextQuestionId: opt.nextQuestionId,
+                                prevQuestionId: opt.prevQuestionId,
+                            };
+                        }
+                      })}
                       slotProps={{
                         inputLabel: {
                           shrink: true,

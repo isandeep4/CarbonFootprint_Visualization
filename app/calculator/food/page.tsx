@@ -2,7 +2,7 @@
 import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useCalculator } from "../../contexts/CalculatorContext";
+import { AnswerI, QuestionnaireI, useCalculator } from "../../contexts/CalculatorContext";
 import DoneIcon from '@mui/icons-material/Done';
 import { getNextQuestion, getPreviousQuestion } from "../../utils/helper_functions";
 import { Questionnaire } from "../../utils/mockQuestionnaire";
@@ -10,42 +10,65 @@ import { Questionnaire } from "../../utils/mockQuestionnaire";
 
 export default function Food(){
     const [currentQuestion, setCurrentQuestion] = useState(Questionnaire['food'][0]);
-    const [selectedOptions, setSelectedOptions] = useState<{
+    const [selectedOption, setSelectedOption] = useState<{
         id: string,
         value: string,
         nextQuestionId: string,
         prevQuestionId: string,
-    }[]>(null);
+    }>(null);
     const router = useRouter();
-    const { foodProgressPer, setFoodProgressPer } = useCalculator();
+    const { foodProgressPer, setFoodProgressPer, questionnaireContext, setQuestionnaireContext } = useCalculator();
     const [doneIconId, setDoneIconId] = useState<{index: string, isDone: boolean}| any>({});
     const [qNo, setQNo] = useState(1);
     const [optionNotSelectederr, setOptionNotSelectedErr] = useState("");
     const [submitError, setSubmitError] = useState(false);
 
+    const resetSubmittedAnswer = () => {
+        setSelectedOption(null);
+    };
+
     const onNextClick = () => {
-        const currentSelectedOption = selectedOptions && selectedOptions.find(opt => opt.id === currentQuestion.id)
-        if(!selectedOptions || !currentSelectedOption){
+        if(!selectedOption){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
         }else{
             setSubmitError(false);
+            setQuestionnaireContext((prevQuestionnaire: QuestionnaireI)=>{
+                const newQuestionnaireSet = { ...prevQuestionnaire};
+                const foodQuestionnaireSet: AnswerI[] = [...(newQuestionnaireSet['food'] || [])];
+                    const updatedAnswer: AnswerI = {
+                        qId: currentQuestion.id,
+                        question: currentQuestion.question,
+                        answer: selectedOption.value,
+                    };
+                    const existingFoodQId = foodQuestionnaireSet.findIndex(fq => fq.qId === currentQuestion.id);
+                    if(existingFoodQId !== -1){
+                        foodQuestionnaireSet[existingFoodQId] = updatedAnswer;
+                    }else {
+                        foodQuestionnaireSet.push(updatedAnswer);
+                    }
+                    
+                return {
+                    ...newQuestionnaireSet,
+                    food: foodQuestionnaireSet
+                };
+            })
             if(currentQuestion.id === "q4") {
                 router.push('/calculator/travel');
             }
             else{
-                const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
-                const nextQuestion = getNextQuestion(Questionnaire['food'], currentQuestion, currentSelectedOption);
+                const nextQuestion = getNextQuestion(Questionnaire['food'], currentQuestion, selectedOption);
                 setCurrentQuestion(nextQuestion);
                 setQNo(prev => prev+1);
             }
             setFoodProgressPer(prevVal => prevVal+ 25);
         }
+        resetSubmittedAnswer();
         
     }
     const onPrevClick = () => {
         setFoodProgressPer(prevVal => prevVal - 25);
-        const currentSelectedOption = selectedOptions.find(opt => opt.id === currentQuestion.id)
+        const currentSelectedOption = selectedOption;
         const prevQuestionId = getPreviousQuestion(Questionnaire['food'], currentQuestion, currentSelectedOption);
         setCurrentQuestion(prevQuestionId);
         setQNo(prev => prev-1);
@@ -84,22 +107,12 @@ export default function Food(){
                         } 
                       }} 
                       key={index}
-                      onClick={()=>{setSelectedOptions((prevSelected) => {
-                        const newAnswerSet = Array.isArray(prevSelected) ? [...prevSelected] : [];
-                        const existingQAnsIndex = newAnswerSet.findIndex((qAns)=> qAns.id === currentQuestion.id);
-                        const updatedAnswer = {
-                            id: currentQuestion.id,
-                            value: option.value,
-                            nextQuestionId: option.nextQuestionId,
-                            prevQuestionId: option.prevQuestionId,
-                        };
-                        if(existingQAnsIndex !== -1){
-                            newAnswerSet[existingQAnsIndex] = updatedAnswer;
-                        }else {
-                            newAnswerSet.push(updatedAnswer);
-                        }
-                        return newAnswerSet;
-                      })}}
+                      onClick={()=>setSelectedOption({
+                        id: currentQuestion.id,
+                        value: option.value,
+                        nextQuestionId: option.nextQuestionId,
+                        prevQuestionId: option.prevQuestionId,
+                      })}
                     //   onFocus={()=>setDoneIconId((prev)=>({
                     //     ...prev,
                     //     index: currentQuestion.options.indexOf((currentOption as {value: any}).value),
