@@ -1,5 +1,5 @@
 export const Questionnaire = {
-  food: [
+  foodQuestionnaire: [
     {
       id: "q1",
       question: "How would you best describe your diet?",
@@ -121,7 +121,7 @@ export const Questionnaire = {
       answerType: "select",
     },
   ],
-  travel: [
+  travelQuestionnaire: [
     {
       id: "q1",
       question:
@@ -331,7 +331,7 @@ export const Questionnaire = {
       answerType: "select",
     },
   ],
-  home: [
+  homeQuestionnaire: [
     {
       id: "q1",
       question: "What kind of house do you live in?",
@@ -514,7 +514,7 @@ export const Questionnaire = {
       answerType: "select",
     },
   ],
-  shopping: [
+  shoppingQuestionnaire: [
     {
       id: "q1",
       question:

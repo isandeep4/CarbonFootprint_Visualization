@@ -2,9 +2,20 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
-import { QuestionType } from "./foodQuestionnaire/page";
 import { Dispatch, SetStateAction } from "react";
 import TextField from "@mui/material/TextField";
+
+export type QuestionType = {
+  id: string;
+  question: string;
+  options: {
+      label: string;
+      value: string;
+      nextQuestionId: string;
+      prevQuestionId: string;
+  }[];
+  answerType: string;
+}
 
 interface QuestionnaireSectionPropsI {
     qNo: number;

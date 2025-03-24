@@ -1,7 +1,4 @@
 {
-  "/calculator/foodQuestionnaire/page": "app/calculator/foodQuestionnaire/page.js",
-  "/calculator/travelQuestionnaire/page": "app/calculator/travelQuestionnaire/page.js",
-  "/calculator/homeQuestionnaire/page": "app/calculator/homeQuestionnaire/page.js",
-  "/calculator/shoppingQuestionnaire/page": "app/calculator/shoppingQuestionnaire/page.js",
+  "/calculator/[questionnaireSection]/page": "app/calculator/[questionnaireSection]/page.js",
   "/calculator/result/page": "app/calculator/result/page.js"
 }

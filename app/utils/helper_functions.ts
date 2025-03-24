@@ -1,4 +1,5 @@
 import { AnswerI } from "../contexts/CalculatorContext";
+import { Questionnaire } from "./mockQuestionnaire";
 
 export const getNextQuestion = (
   questionnaire,
@@ -61,4 +62,17 @@ export const updateProgress = (value: number, setFoodProgressPer) => {
 // Helper function for resetting selected option state
 export const resetSubmittedAnswer = (setSelectedOption) => {
   setSelectedOption(null);
+};
+export const getLastQuestionIdForSection = (section) => {
+  console.log("Questionnaire[section][-1]", Questionnaire[section]);
+  return Questionnaire[section][Questionnaire[section].length - 1].id;
+};
+export const getNextSection = (currentSection) => {
+  const currentSectionIndex =
+    Object.keys(Questionnaire).indexOf(currentSection);
+
+  if (currentSectionIndex > 4) {
+    return;
+  }
+  return Object.keys(Questionnaire)[currentSectionIndex + 1];
 };
