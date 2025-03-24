@@ -12,6 +12,12 @@ export type QuestionnaireI = {
 interface CalculatorContextType {
     foodProgressPer: number,
     setFoodProgressPer: React.Dispatch<React.SetStateAction<number>>;
+    shoppingProgressPer: number,
+    setShoppingProgressPer: React.Dispatch<React.SetStateAction<number>>;
+    travelProgressPer: number,
+    setTravelProgressPer: React.Dispatch<React.SetStateAction<number>>;
+    homeProgressPer: number,
+    setHomeProgressPer: React.Dispatch<React.SetStateAction<number>>;
     questionnaireContext: QuestionnaireI,
     setQuestionnaireContext: React.Dispatch<React.SetStateAction<QuestionnaireI>>;
 }
@@ -21,9 +27,24 @@ const CalculatorContext = createContext<CalculatorContextType | null>(null);
 export default function CalculatorProvider({children}: {children: React.ReactNode}){
     const [foodProgressPer, setFoodProgressPer] = useState(1);
     const [questionnaireContext, setQuestionnaireContext] = useState({});
+    const [shoppingProgressPer, setShoppingProgressPer] = useState(1);
+    const [travelProgressPer, setTravelProgressPer] = useState(1);
+    const [homeProgressPer, setHomeProgressPer] = useState(1);
     return (
-        <CalculatorContext.Provider value={{foodProgressPer, setFoodProgressPer, questionnaireContext, setQuestionnaireContext}}>
-            {children}
+        <CalculatorContext.Provider value={{
+          foodProgressPer, 
+          setFoodProgressPer, 
+          questionnaireContext, 
+          setQuestionnaireContext,
+          travelProgressPer,
+          setTravelProgressPer,
+          homeProgressPer,
+          setHomeProgressPer,
+          shoppingProgressPer,
+          setShoppingProgressPer
+        }}
+        >
+          {children}
         </CalculatorContext.Provider>
     )
 } 

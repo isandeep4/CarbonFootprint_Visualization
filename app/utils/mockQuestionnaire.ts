@@ -29,6 +29,7 @@ export const Questionnaire = {
           prevQuestionId: null,
         },
       ],
+      answerType: "select",
     },
     {
       id: "q2",
@@ -60,6 +61,7 @@ export const Questionnaire = {
           prevQuestionId: "q1",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q3",
@@ -90,6 +92,7 @@ export const Questionnaire = {
           prevQuestionId: "q2",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q4",
@@ -115,6 +118,7 @@ export const Questionnaire = {
           prevQuestionId: "q3",
         },
       ],
+      answerType: "select",
     },
   ],
   travel: [
@@ -210,7 +214,12 @@ export const Questionnaire = {
           nextQuestionId: "q5",
           prevQuestionId: "q2",
         },
-        { label: "Over 25 hours", value: "25hrs", nextQuestionId: "q5" },
+        {
+          label: "Over 25 hours",
+          value: "25hrs",
+          nextQuestionId: "q5",
+          prevQuestionId: "q2",
+        },
       ],
       answerType: "select",
     },
@@ -352,6 +361,7 @@ export const Questionnaire = {
           prevQuestionId: null,
         },
       ],
+      answerType: "select",
     },
     {
       id: "q2",
@@ -382,6 +392,7 @@ export const Questionnaire = {
           prevQuestionId: "q1",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q3",
@@ -412,6 +423,7 @@ export const Questionnaire = {
           prevQuestionId: "q2",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q4",
@@ -448,6 +460,7 @@ export const Questionnaire = {
           prevQuestionId: "q3",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q5",
@@ -467,6 +480,7 @@ export const Questionnaire = {
           prevQuestionId: "q4",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q6",
@@ -497,6 +511,7 @@ export const Questionnaire = {
           prevQuestionId: "q5",
         },
       ],
+      answerType: "select",
     },
   ],
   shopping: [
@@ -530,6 +545,7 @@ export const Questionnaire = {
           prevQuestionId: null,
         },
       ],
+      answerType: "select",
     },
     {
       id: "q2",
@@ -555,6 +571,7 @@ export const Questionnaire = {
           prevQuestionId: "q1",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q3",
@@ -586,6 +603,7 @@ export const Questionnaire = {
           prevQuestionId: "q2",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q4",
@@ -617,6 +635,7 @@ export const Questionnaire = {
           prevQuestionId: "q3",
         },
       ],
+      answerType: "select",
     },
     {
       id: "q5",
@@ -653,6 +672,7 @@ export const Questionnaire = {
           prevQuestionId: "q4",
         },
       ],
+      answerType: "select",
     },
   ],
 };

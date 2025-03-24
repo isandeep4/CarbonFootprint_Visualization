@@ -11,25 +11,40 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calculator/layout.js"
     ],
-    "/calculator/home/page": [
+    "/calculator/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/home/page.js"
+      "static/chunks/app/calculator/page.js"
     ],
-    "/calculator/food/page": [
+    "/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/food/page.js"
+      "static/chunks/app/dashboard/page.js"
     ],
-    "/calculator/travel/page": [
+    "/calculator/foodQuestionnaire/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/travel/page.js"
+      "static/chunks/app/calculator/foodQuestionnaire/page.js"
     ],
-    "/calculator/shopping/page": [
+    "/calculator/travelQuestionnaire/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/shopping/page.js"
+      "static/chunks/app/calculator/travelQuestionnaire/page.js"
+    ],
+    "/calculator/homeQuestionnaire/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/calculator/homeQuestionnaire/page.js"
+    ],
+    "/calculator/shoppingQuestionnaire/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/calculator/shoppingQuestionnaire/page.js"
+    ],
+    "/calculator/result/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/calculator/result/page.js"
     ]
   }
 }
