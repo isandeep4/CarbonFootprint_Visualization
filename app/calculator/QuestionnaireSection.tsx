@@ -59,12 +59,12 @@ export default function QuestionnaireSection({
         >
         <Box sx={{ margin: "2rem", width: "100%"}}>
             <Typography sx={{fontSize: "1.35rem", fontFamily: "serif", fontWeight: "500"}}>
-                {`${questionnaireType}  Q${qNo} of Q`}</Typography>
+                {`${questionnaireType}  ${currentQuestion.id.toLocaleUpperCase()} of Q`}</Typography>
           <LinearProgress variant="determinate" value={progressBarStatus} />
         </Box>
          <Box sx={{ bgcolor: "rgb(255, 255, 255)", width: "600px"}}>
             <Box sx={{ margin: "1rem" }}>
-                <Typography sx={{ fontSize: "1.4rem"}}>{currentQuestion.question}</Typography>
+                <Typography sx={{ fontSize: "1.4rem"}}>{currentQuestion?.question}</Typography>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column"}}>
             {
@@ -96,7 +96,7 @@ export default function QuestionnaireSection({
                     </Button>
                 )) 
                 :
-                currentQuestion.options.map((opt, index)=>(
+                currentQuestion?.options.map((opt, index)=>(
                     <TextField 
                       key={index}
                       sx={{margin: "0.5rem"}}
@@ -137,7 +137,7 @@ export default function QuestionnaireSection({
                  sx={{paddingX: "1rem"}} 
                  variant="outlined" 
                  onClick={()=>onPrevClick()} 
-                 disabled={currentQuestion.id === "q1"}
+                 disabled={currentQuestion?.id === "q1" && questionnaireType === "FOOD"}
                  >
                Back
               </Button>

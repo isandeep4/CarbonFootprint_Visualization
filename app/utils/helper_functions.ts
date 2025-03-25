@@ -1,4 +1,4 @@
-import { AnswerI } from "../contexts/CalculatorContext";
+import { AnswerI, useCalculator } from "../contexts/CalculatorContext";
 import { Questionnaire } from "./mockQuestionnaire";
 
 export const getNextQuestion = (
@@ -20,7 +20,7 @@ export const getNextQuestion = (
 export const getPreviousQuestion = (
   questionnaire,
   currentQuestion,
-  optionSelected
+  optionSelected?
 ) => {
   const previousQuestionId = currentQuestion.options[0]?.prevQuestionId;
   return questionnaire.find((qns) => qns.id === previousQuestionId);
@@ -64,9 +64,13 @@ export const resetSubmittedAnswer = (setSelectedOption) => {
   setSelectedOption(null);
 };
 export const getLastQuestionIdForSection = (section) => {
-  console.log("Questionnaire[section][-1]", Questionnaire[section]);
   return Questionnaire[section][Questionnaire[section].length - 1].id;
 };
+export const isFirstQuestionForCurrentSection = (currentQuestion) => {
+  console.log("currentQuestion.id", currentQuestion.id);
+  return currentQuestion.id === "q1";
+};
+//Helper function to switch to the next section
 export const getNextSection = (currentSection) => {
   const currentSectionIndex =
     Object.keys(Questionnaire).indexOf(currentSection);
@@ -75,4 +79,65 @@ export const getNextSection = (currentSection) => {
     return;
   }
   return Object.keys(Questionnaire)[currentSectionIndex + 1];
+};
+//helper function for switching to prev section
+export const getPrevSection = (currentSection) => {
+  const currentSectionIndex =
+    Object.keys(Questionnaire).indexOf(currentSection);
+
+  if (currentSectionIndex === 0) {
+    return null;
+  }
+  return Object.keys(Questionnaire)[currentSectionIndex - 1];
+};
+export const getProgressBarContext = (section) => {
+  const {
+    foodProgressPer,
+    setFoodProgressPer,
+    travelProgressPer,
+    setTravelProgressPer,
+    homeProgressPer,
+    setHomeProgressPer,
+    shoppingProgressPer,
+    setShoppingProgressPer,
+  } = useCalculator();
+  const currentQuestionnaireSectionLength = Questionnaire[section].length;
+  const progressFactor = 100 / currentQuestionnaireSectionLength;
+  if (section === "foodQuestionnaire") {
+    return {
+      progressFactor,
+      progressBarStatus: foodProgressPer,
+      setProgressBarStatus: setFoodProgressPer,
+    };
+  } else if (section === "travelQuestionnaire") {
+    return {
+      progressFactor,
+      progressBarStatus: travelProgressPer,
+      setProgressBarStatus: setTravelProgressPer,
+    };
+  } else if (section === "homeQuestionnaire") {
+    return {
+      progressFactor,
+      progressBarStatus: homeProgressPer,
+      setProgressBarStatus: setHomeProgressPer,
+    };
+  } else {
+    return {
+      progressFactor,
+      progressBarStatus: shoppingProgressPer,
+      setProgressBarStatus: setShoppingProgressPer,
+    };
+  }
+};
+export const resetProgressBar = (progressBarPer) => {
+  const {
+    setFoodProgressPer,
+    setTravelProgressPer,
+    setHomeProgressPer,
+    setShoppingProgressPer,
+  } = progressBarPer;
+  setFoodProgressPer(0);
+  setTravelProgressPer(0);
+  setHomeProgressPer(0);
+  setShoppingProgressPer(0);
 };

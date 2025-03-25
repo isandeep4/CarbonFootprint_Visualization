@@ -453,12 +453,6 @@ export const Questionnaire = {
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
-        {
-          label: "Wood",
-          value: "wood",
-          nextQuestionId: "q5",
-          prevQuestionId: "q3",
-        },
       ],
       answerType: "select",
     },
