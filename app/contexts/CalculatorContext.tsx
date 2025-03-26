@@ -34,7 +34,7 @@ export default function CalculatorProvider({children}: {children: React.ReactNod
     const [shoppingProgressPer, setShoppingProgressPer] = useState(1);
     const [travelProgressPer, setTravelProgressPer] = useState(1);
     const [homeProgressPer, setHomeProgressPer] = useState(1);
-    const [currentQuestionContext, setCurrentQuestionContext] = useState(Questionnaire["foodQuestionnaire"][0])
+    const [currentQuestionContext, setCurrentQuestionContext] = useState(null);
 
     return (
         <CalculatorContext.Provider value={{

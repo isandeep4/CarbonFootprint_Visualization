@@ -4,6 +4,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import { Dispatch, SetStateAction } from "react";
 import TextField from "@mui/material/TextField";
+import { AnswerI, QuestionnaireI, useCalculator } from "../contexts/CalculatorContext";
+import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
 
 export type QuestionType = {
   id: string;
@@ -21,33 +23,40 @@ interface QuestionnaireSectionPropsI {
     qNo: number;
     progressBarStatus: number,
     currentQuestion: QuestionType,
-    setSelectedOption: Dispatch<SetStateAction<{
-        id: string;
-        value: string| {
-            [key: string]: string;
-        };
-        nextQuestionId: string;
-        prevQuestionId: string;
-    }>>;
     onPrevClick: () => void;
     onNextClick: () => void;
     submitError: boolean;
     optionNotSelectederr: string;
     questionnaireType: string;
+    section: string;
 }
 
 export default function QuestionnaireSection({
      qNo, 
      progressBarStatus, 
      currentQuestion, 
-     setSelectedOption, 
      onPrevClick, 
      onNextClick, 
      submitError, 
      optionNotSelectederr,
-     questionnaireType
+     questionnaireType,
+     section
     }: QuestionnaireSectionPropsI)
     {
+      const { questionnaireContext, setQuestionnaireContext } 
+        = useCalculator();
+      const selectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
+
+      const handleOptionClick = (option) => {
+        setQuestionnaireContext(
+          prevQuestionnaire=>
+            updateQuestionnaire(prevQuestionnaire, currentQuestion, option, section, "select"));
+      }
+      const handleTextFieldChange = (event, field) => {
+        setQuestionnaireContext(
+          prevQuestionnaire=>
+           updateQuestionnaire(prevQuestionnaire, currentQuestion, field, section, "textfield", event));
+      }
     return (
         <Box
           sx={{ 
@@ -74,21 +83,12 @@ export default function QuestionnaireSection({
                       sx={{ 
                         margin: "0.5rem", 
                         padding:"1rem", 
-                        bgcolor: "black", 
-                        color: "white",
-                        '&:focus': {
-                            backgroundColor: "white",
-                            border: "1px solid black",
-                            color: "black"
-                        } 
+                        bgcolor: selectedOptionIdx === index ? "white": "black", 
+                        color: selectedOptionIdx === index ? "black": "white",
+                        border: selectedOptionIdx === index ? "1px solid black" : "none"
                       }} 
                       key={index}
-                      onClick={()=> setSelectedOption({
-                        id: currentQuestion.id,
-                        value: option.value,
-                        nextQuestionId: option.nextQuestionId,
-                        prevQuestionId: option.prevQuestionId,
-                      })}
+                      onClick={()=> handleOptionClick(option)}
                     >
                       <Typography>
                         {option.label}
@@ -103,31 +103,13 @@ export default function QuestionnaireSection({
                       variant="standard"
                       label={opt.label}
                       type="number"
-                      onChange={(e)=>
-                        setSelectedOption(prev => {
-                          if(prev?.id === currentQuestion.id){
-                            return {
-                                ...prev,
-                                value: {
-                                    ...(prev.value as { [key: string]: string }),
-                                    [opt.value]: e.target.value
-                                }
-                            };
-                          }
-                          return {
-                            id: currentQuestion.id,
-                            value: {
-                                [opt.value]: e.target.value
-                            },
-                            nextQuestionId: opt.nextQuestionId,
-                            prevQuestionId: opt.prevQuestionId,
-                          };
-                      })}
+                      onChange={(e)=>handleTextFieldChange(e, opt)}
                       slotProps={{
                         inputLabel: {
                           shrink: true,
                         },
-                    }}
+                      }}
+                      value={getTextFieldValue(questionnaireContext[section], currentQuestion, opt.value)}
                     />
                 ))
             }
