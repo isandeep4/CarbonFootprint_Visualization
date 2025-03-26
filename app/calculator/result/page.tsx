@@ -1,9 +1,61 @@
-import { Box, Typography } from "@mui/material";
+"use client"
+import { Box, Button, Paper, Typography, styled } from "@mui/material";
+import Grid from '@mui/material/Grid2';
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    ...theme.applyStyles('dark', {
+      backgroundColor: '#1A2027',
+    }),
+  }));
 
 export default function Result(){
     return (
         <Box>
-            <Typography>Your Carbon Footprint is: </Typography>
+            <Grid
+            container
+            direction="row"
+            sx={{
+             justifyContent: "flex-start",
+             alignItems: "baseline",
+            }}
+            spacing={12}
+            >
+            <Grid size={{ xs: 6, md: 8 }}>
+                <Item>
+                <Box
+                id="category-a"
+                sx={{ fontSize: '5px' }}
+                >
+                    <Typography variant="h5">Oh no! You're over target.</Typography>
+                    <Typography>
+                    <p>
+                        Your annual footprint is above the UK target. However, 
+                        there is still time to reduce your impact. 
+                        Explore your breakdown below for ideas on how to make a difference.    
+                    </p>
+                    </Typography>
+                    <Typography variant="h5">our footprint is equal to 12.8 Tonnes*.</Typography>
+                    <Button>
+                        <Typography>SHARE</Typography>
+                    </Button>
+                </Box>
+                </Item>
+            </Grid>
+            <Grid size={{ xs: 6, md: 4 }}>
+                <Item>size=4</Item>
+            </Grid>
+            <Grid size={{ xs: 6, md: 4 }}>
+                <Item>size=4</Item>
+            </Grid>
+            <Grid size={{ xs: 6, md: 8 }}>
+                <Item>size=8</Item>
+            </Grid>  
+            </Grid>
         </Box>
     )
 }

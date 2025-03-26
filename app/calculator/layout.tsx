@@ -8,14 +8,16 @@ export default function CalculatorLayout({children}: {children: React.ReactNode,
     const [activeTabIndex, setActiveTabIndex] = useState(null);
     const pathName = usePathname();
     const tabList = [{label: "FOOD", value: "foodQuestionnaire"}, {label: "TRAVEL", value: "travelQuestionnaire"}, {label: "HOME", value: "homeQuestionnaire"}, {label: "SHOPPING", value: "shoppingQuestionnaire"}];
-
+    // Hide tabs on result pages
+    const hideTabs = pathName.includes("result");
     useEffect(()=>{
         const currentTab = tabList.findIndex(tab => pathName.includes(tab.value));
         setActiveTabIndex(currentTab);
     }, [pathName]);
     return (
         <Box sx={{ height: "100%", bgcolor: 'hsla(215, 15%, 97%, 0.5);'}}>
-            <nav>
+            {!hideTabs && 
+              <nav>
             <Box sx={{ margin: "2rem", bgcolor: "rgb(255, 255, 255)"}}>
               <ul style={{ display: "flex", gap: "2rem", justifyContent: "center"}}>
               {
@@ -44,12 +46,12 @@ export default function CalculatorLayout({children}: {children: React.ReactNode,
              }
              </ul>                
             </Box>
-            </nav> 
+              </nav> }
             <Box 
             sx={{ 
               display: "flex", 
               flexDirection: "row", 
-              justifyContent: "center", 
+              justifyContent: !hideTabs ? "center" : "", 
               margin: "2rem",
             }}
             >

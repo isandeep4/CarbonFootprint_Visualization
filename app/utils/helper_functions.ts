@@ -30,29 +30,65 @@ export const updateQuestionnaire = (
   prevQuestionnaire,
   currentQuestion,
   selectedOption,
-  section
+  section,
+  inputType?,
+  event?
 ) => {
   const newQuestionnaireSet = { ...prevQuestionnaire };
   const travelQuestionnaireSet: AnswerI[] = [
     ...(newQuestionnaireSet[section] || []),
   ];
-  const updatedAnswer: AnswerI = {
-    qId: currentQuestion.id,
-    question: currentQuestion.question,
-    answer: selectedOption.value,
-  };
-  const existingTravelQId = travelQuestionnaireSet.findIndex(
-    (tr) => tr.qId === currentQuestion.id
-  );
-  if (existingTravelQId !== -1) {
-    travelQuestionnaireSet[existingTravelQId] = updatedAnswer;
+  if (inputType === "select") {
+    const updatedAnswer: AnswerI = {
+      qId: currentQuestion.id,
+      question: currentQuestion.question,
+      answer: selectedOption.value,
+    };
+    const existingTravelQId = travelQuestionnaireSet.findIndex(
+      (tr) => tr.qId === currentQuestion.id
+    );
+    if (existingTravelQId !== -1) {
+      travelQuestionnaireSet[existingTravelQId] = updatedAnswer;
+    } else {
+      travelQuestionnaireSet.push(updatedAnswer);
+    }
+    return {
+      ...newQuestionnaireSet,
+      [section]: travelQuestionnaireSet,
+    };
   } else {
-    travelQuestionnaireSet.push(updatedAnswer);
+    const existingTextFieldQid = travelQuestionnaireSet.findIndex(
+      (tr) => tr.qId === currentQuestion.id
+    );
+    if (existingTextFieldQid !== -1) {
+      const existingTextFieldQAns =
+        travelQuestionnaireSet[existingTextFieldQid];
+      const updatedQAns = {
+        ...existingTextFieldQAns,
+        answer: {
+          ...(existingTextFieldQAns.answer as { [type: string]: string }),
+          [selectedOption.value]: event.target.value,
+        },
+      };
+      travelQuestionnaireSet[existingTextFieldQid] = updatedQAns;
+      return {
+        ...newQuestionnaireSet,
+        [section]: travelQuestionnaireSet,
+      };
+    } else {
+      travelQuestionnaireSet.push({
+        qId: currentQuestion.id,
+        question: currentQuestion.question,
+        answer: {
+          [selectedOption.value]: event.target.value,
+        },
+      });
+      return {
+        ...newQuestionnaireSet,
+        [section]: travelQuestionnaireSet,
+      };
+    }
   }
-  return {
-    ...newQuestionnaireSet,
-    [section]: travelQuestionnaireSet,
-  };
 };
 
 // Helper function for updating progress bar
@@ -140,4 +176,41 @@ export const resetProgressBar = (progressBarPer) => {
   setTravelProgressPer(0);
   setHomeProgressPer(0);
   setShoppingProgressPer(0);
+};
+
+//Get already selected Option
+export const getSelectedOption = (
+  questionnaireContext,
+  currentQuestion,
+  section
+) => {
+  if (!questionnaireContext || !questionnaireContext[section]) {
+    return;
+  }
+  //get the selected option from the context store
+  const QAnsSet = questionnaireContext[section];
+  const currentQAns = QAnsSet.find((qans) => qans.qId === currentQuestion.id);
+  //if current questionAns set not exist in the context
+  if (!currentQAns) {
+    return;
+  }
+  if (currentQuestion.answerType !== "select") {
+    return;
+  }
+  //find the selected option index from the current options list matches with the selected option
+  const selectedOptionIndex = currentQuestion.options.findIndex(
+    (opt) => opt.value === currentQAns.answer
+  );
+  return selectedOptionIndex;
+};
+//fetch particular text field value by label
+export const getTextFieldValue = (
+  questionnaireContext,
+  currentQuestion,
+  label
+) => {
+  const textFieldValue = questionnaireContext.find(
+    (qans) => qans.qId === currentQuestion.id
+  )?.answer[label];
+  return textFieldValue ? textFieldValue : 0;
 };

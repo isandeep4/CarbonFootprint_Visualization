@@ -1,9 +1,9 @@
 "use client"
 import { useParams, useRouter } from "next/navigation";
-import { QuestionnaireI, useCalculator } from "../../contexts/CalculatorContext";
-import { useEffect, useRef, useState } from "react";
+import { useCalculator } from "../../contexts/CalculatorContext";
+import { useEffect, useState } from "react";
 import { Questionnaire } from "../../utils/mockQuestionnaire";
-import { updateQuestionnaire, getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionForCurrentSection, resetProgressBar } from "../../utils/helper_functions";
+import { getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionForCurrentSection, resetProgressBar, getSelectedOption } from "../../utils/helper_functions";
 import QuestionnaireSection, { QuestionType } from "../QuestionnaireSection";
 
 enum QuestionnaireSectionMapping {
@@ -24,19 +24,13 @@ export default function QuestionnaireSectionPage(){
     } = useCalculator();
     const params = useParams();
     const section = params?.questionnaireSection as string;
+    const { questionnaireContext } = useCalculator();
     const router = useRouter();
     const [currentQuestion, setCurrentQuestion] = useState<QuestionType>(currentQuestionContext || Questionnaire[section][0]);
-    const [selectedOption, setSelectedOption] = useState<{
-        id: string,
-        value: string,
-        nextQuestionId: string,
-        prevQuestionId: string,
-    }>(null);
+    const alreadySelectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
     const [qNo, setQNo] = useState(1);
-    const [optionNotSelectederr, setOptionNotSelectedErr] = useState("");
+    const [optionNotSelectedErr, setOptionNotSelectedErr] = useState("");
     const [submitError, setSubmitError] = useState(false);
-    const { setQuestionnaireContext } 
-        = useCalculator();
     const nextSection = getNextSection(section);
     const prevSection = getPrevSection(section);
     const {progressFactor, progressBarStatus, setProgressBarStatus} = getProgressBarContext(section);
@@ -45,27 +39,21 @@ export default function QuestionnaireSectionPage(){
     useEffect(()=>{
         setQuestionnaireType(QuestionnaireSectionMapping[section]);
     }, [section]);
-
+   
     const onNextClick = () => {
-        if(!selectedOption){
+        if(currentQuestion.answerType === "select" && !currentQuestion.options[alreadySelectedOptionIdx]){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
             return;
         }
-        if (currentQuestion.answerType === "textField" && Object.keys(selectedOption.value).length !== 3){
+        if (currentQuestion.answerType === "textField" &&
+        Object.keys(questionnaireContext[section].find(
+            (qans) => qans.qId === currentQuestion.id)?.answer).length !== 3){
             setSubmitError(true);
             setOptionNotSelectedErr("Please provide one or more input");
             return;
         }
         setSubmitError(false);
-        setQuestionnaireContext(
-            (prevQuestionnaire: QuestionnaireI)=>
-             updateQuestionnaire(
-                prevQuestionnaire, 
-                currentQuestion, 
-                selectedOption, 
-                section
-             ))
         if(currentQuestion.id === getLastQuestionIdForSection(section) && section === "shoppingQuestionnaire"){
             router.push('/calculator/result');
             setCurrentQuestionContext(null);
@@ -83,7 +71,7 @@ export default function QuestionnaireSectionPage(){
             return;
         }
         const nextQuestion = currentQuestion.answerType === "select" ? 
-            getNextQuestion(Questionnaire[section], currentQuestion, selectedOption) :
+            getNextQuestion(Questionnaire[section], currentQuestion, currentQuestion.options[alreadySelectedOptionIdx]) :
             getNextQuestion(Questionnaire[section], currentQuestion);
         setCurrentQuestion({
             id: nextQuestion.id, 
@@ -98,7 +86,6 @@ export default function QuestionnaireSectionPage(){
             answerType: nextQuestion.answerType 
         })
         setQNo(prev => prev+1);  
-        resetSubmittedAnswer();
         updateProgress(progressFactor);
     }
     const onPrevClick = () => {
@@ -113,11 +100,10 @@ export default function QuestionnaireSectionPage(){
             setQNo(Questionnaire[currentSection].length);
             router.push(`/calculator/${currentSection}`);
             setQNo(Questionnaire[currentSection].length);  
-            //setQuestionnaireType(QuestionnaireSectionMapping[currentSection])
             return;
         }
         updateProgress(-progressFactor);
-        const currentSelectedOption = selectedOption;
+        const currentSelectedOption = currentQuestion.options[alreadySelectedOptionIdx];
         const prevQuestion = getPreviousQuestion(Questionnaire[section], currentQuestion, currentSelectedOption);
         setCurrentQuestion(prevQuestion);
         setCurrentQuestionContext(prevQuestion);
@@ -127,20 +113,18 @@ export default function QuestionnaireSectionPage(){
     const updateProgress = (value: number) => {
         setProgressBarStatus(preVal => preVal + value);
     };
-    const resetSubmittedAnswer = () => {
-        setSelectedOption(null);
-    };
+
     return (
         <QuestionnaireSection 
          qNo={qNo}
          progressBarStatus={progressBarStatus} 
          currentQuestion={currentQuestion} 
-         setSelectedOption={setSelectedOption}
          onPrevClick={onPrevClick}
          onNextClick={onNextClick} 
          submitError={submitError} 
-         optionNotSelectederr={optionNotSelectederr}
+         optionNotSelectederr={optionNotSelectedErr}
          questionnaireType={questionnaireType}
+         section={section}
         />
     )
 }
