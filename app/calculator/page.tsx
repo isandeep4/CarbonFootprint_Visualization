@@ -1,9 +1,5 @@
-import { Typography } from "@mui/material";
-import Box from "@mui/material/Box";
+import { redirect } from "next/navigation";
 
 export default function Calculator(){
-    return (
-        <Box>
-        </Box>
-    )
+    redirect('/calculator/foodQuestionnaire');
 }
