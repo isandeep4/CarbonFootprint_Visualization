@@ -5,7 +5,7 @@ import { Questionnaire } from '../utils/mockQuestionnaire';
 export type AnswerI = {
   qId: string;
   question: string;
-  answer: string | {};
+  answer: string | {} | {}[];
 };
 export type QuestionnaireI = {
   [type: string]: AnswerI[];

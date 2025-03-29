@@ -2,39 +2,59 @@ export const Questionnaire = {
   foodQuestionnaire: [
     {
       id: "q1",
-      question: "How would you best describe your diet?",
+      question: "What do you eat in a week?",
       options: [
         {
-          label: "Vegetarian",
-          value: "vegetarian",
+          label: "BEEF(Kg)",
+          value: 36,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "Non-Vegetarian",
-          value: "nonVegetarian",
+          label: "LAMB & MUTTON(Kg)",
+          value: 20,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "Eggeterian",
-          value: "eggeterian",
+          label: "PORK(Kg)",
+          value: 12,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "Vegan",
-          value: "vegan",
+          label: "POULTRY",
+          value: 10,
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "SEA FOOD",
+          value: 20,
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "DIARY PRODUCTS",
+          value: 15,
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "Vegetables",
+          value: 5,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
       ],
       answerType: "select",
+      optionType: "multiple",
     },
     {
       id: "q2",
       question:
         "In a week, how much do you spend on food from restaurants, canteens and takeaways?",
+      optionType: "single",
       options: [
         {
           label: "0$",
@@ -66,6 +86,7 @@ export const Questionnaire = {
     {
       id: "q3",
       question: "Of the food you buy how much is wasted and thrown away?",
+      optionType: "single",
       options: [
         {
           label: "None",
@@ -98,6 +119,7 @@ export const Questionnaire = {
       id: "q4",
       question:
         "How often do you buy locally produced food that is not imported to the UK?",
+      optionType: "single",
       options: [
         {
           label: "Local market",
@@ -126,6 +148,7 @@ export const Questionnaire = {
       id: "q1",
       question:
         "What kind of vehicle do you travel in most often as driver or passenger? (if any)?",
+      optionType: "single",
       options: [
         {
           label: "Car",
@@ -157,6 +180,7 @@ export const Questionnaire = {
     {
       id: "q2",
       question: "What is your car's fuel type?",
+      optionType: "single",
       options: [
         {
           label: "Petrol",
@@ -189,6 +213,7 @@ export const Questionnaire = {
       id: "q3",
       question:
         "How many hours a week do you spend in your car or on your motorbike for personal use including commuting?",
+      optionType: "single",
       options: [
         {
           label: "Under 2 hours",
@@ -227,6 +252,7 @@ export const Questionnaire = {
       id: "q4",
       question:
         "How many hours a week do you spend on the train for personal use including commuting?",
+      optionType: "single",
       options: [
         {
           label: "I don't travel by train",
@@ -271,6 +297,7 @@ export const Questionnaire = {
       id: "q5",
       question:
         "In the last year, how many return flights have you made in total to the following locations?",
+      optionType: "single",
       options: [
         {
           label: "Domestic (UK / Ireland)",
@@ -296,6 +323,7 @@ export const Questionnaire = {
     {
       id: "q6",
       question: "What percentage of your flights do you offset?",
+      optionType: "single",
       options: [
         {
           label: "None of them",
@@ -335,6 +363,7 @@ export const Questionnaire = {
     {
       id: "q1",
       question: "What kind of house do you live in?",
+      optionType: "single",
       options: [
         {
           label: "Detached",
@@ -366,6 +395,7 @@ export const Questionnaire = {
     {
       id: "q2",
       question: "How many bedrooms does your house have?",
+      optionType: "single",
       options: [
         {
           label: "1",
@@ -397,6 +427,7 @@ export const Questionnaire = {
     {
       id: "q3",
       question: "How many people (aged 17 and over) live in your house?",
+      optionType: "single",
       options: [
         {
           label: "1",
@@ -428,6 +459,7 @@ export const Questionnaire = {
     {
       id: "q4",
       question: "How do you heat your home?",
+      optionType: "single",
       options: [
         {
           label: "Gas",
@@ -460,6 +492,7 @@ export const Questionnaire = {
       id: "q5",
       question:
         "Do you regularly turn off lights and not leave your appliances on standby?",
+      optionType: "single",
       options: [
         {
           label: "Yes",
@@ -479,6 +512,7 @@ export const Questionnaire = {
     {
       id: "q6",
       question: "How warm do you keep your home in winter?",
+      optionType: "single",
       options: [
         {
           label: "below 14 degree",
@@ -513,6 +547,7 @@ export const Questionnaire = {
       id: "q1",
       question:
         "In a typical month, how much do you spend on clothes and footwear?",
+      optionType: "single",
       options: [
         {
           label: "0$",
@@ -545,6 +580,7 @@ export const Questionnaire = {
       id: "q2",
       question:
         "In a typical month, how much do you spend on health, beauty and grooming products?",
+      optionType: "single",
       options: [
         {
           label: "1$",
@@ -571,6 +607,7 @@ export const Questionnaire = {
       id: "q3",
       question:
         "In a typical month, how much do you spend on phone, internet and TV contracts?",
+      optionType: "single",
       options: [
         {
           label: "0$",
@@ -603,6 +640,7 @@ export const Questionnaire = {
       id: "q4",
       question:
         "In a typical month, how much do you spend on entertainment and hobbies (sports/gym, cinema, books, newspapers, gardening, computer games)",
+      optionType: "single",
       options: [
         {
           label: "0$ - 25$",
@@ -634,6 +672,7 @@ export const Questionnaire = {
     {
       id: "q5",
       question: "Which of these types of waste do you recycle and/or compost?",
+      optionType: "single",
       options: [
         {
           label: "Food",

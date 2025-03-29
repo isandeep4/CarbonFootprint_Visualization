@@ -31,64 +31,106 @@ export const updateQuestionnaire = (
   currentQuestion,
   selectedOption,
   section,
-  inputType?,
+  inputType,
+  optionType,
+  isToggled?,
   event?
 ) => {
-  const newQuestionnaireSet = { ...prevQuestionnaire };
-  const travelQuestionnaireSet: AnswerI[] = [
-    ...(newQuestionnaireSet[section] || []),
-  ];
+  const QuestionAnsSetArr: AnswerI[] = [...(prevQuestionnaire[section] || [])];
+  // Helper to update the questionnaire state
+  const updateState = () => ({
+    ...prevQuestionnaire,
+    [section]: QuestionAnsSetArr,
+  });
+
+  // handle select inputs
   if (inputType === "select") {
     const updatedAnswer: AnswerI = {
       qId: currentQuestion.id,
       question: currentQuestion.question,
-      answer: selectedOption.value,
+      answer: {
+        label: selectedOption.label,
+        value: selectedOption.value,
+      },
     };
-    const existingTravelQId = travelQuestionnaireSet.findIndex(
+    const existingQAnsIndex = QuestionAnsSetArr.findIndex(
       (tr) => tr.qId === currentQuestion.id
     );
-    if (existingTravelQId !== -1) {
-      travelQuestionnaireSet[existingTravelQId] = updatedAnswer;
+    if (existingQAnsIndex !== -1) {
+      if (optionType === "single") {
+        //update single choice answer
+        QuestionAnsSetArr[existingQAnsIndex] = updatedAnswer;
+      } else {
+        //handling multiple selection
+        const newAnswer = QuestionAnsSetArr[existingQAnsIndex].answer as {
+          label: string;
+          value: number;
+        }[];
+        const existingAnsIndex = newAnswer.findIndex(
+          (ans) => ans.label === selectedOption.label
+        );
+        if (existingAnsIndex !== -1) {
+          //update existing answers
+          //remove answer if deselected
+          if (!isToggled) {
+            newAnswer.splice(existingAnsIndex, 1);
+          } else {
+            newAnswer[existingAnsIndex].value = selectedOption.value;
+          }
+        } else {
+          // Add new answers
+          newAnswer.push({
+            label: selectedOption.label,
+            value: selectedOption.value,
+          });
+        }
+        updatedAnswer.answer = newAnswer;
+        QuestionAnsSetArr[existingQAnsIndex] = updatedAnswer;
+      }
     } else {
-      travelQuestionnaireSet.push(updatedAnswer);
+      //Add new answer foe songle and multiple choice
+      if (optionType === "single") {
+        QuestionAnsSetArr.push(updatedAnswer);
+      } else {
+        QuestionAnsSetArr.push({
+          qId: currentQuestion.id,
+          question: currentQuestion.question,
+          answer: [
+            { label: selectedOption.label, value: selectedOption.value },
+          ],
+        });
+      }
     }
-    return {
-      ...newQuestionnaireSet,
-      [section]: travelQuestionnaireSet,
-    };
-  } else {
-    const existingTextFieldQid = travelQuestionnaireSet.findIndex(
-      (tr) => tr.qId === currentQuestion.id
-    );
-    if (existingTextFieldQid !== -1) {
-      const existingTextFieldQAns =
-        travelQuestionnaireSet[existingTextFieldQid];
-      const updatedQAns = {
-        ...existingTextFieldQAns,
-        answer: {
-          ...(existingTextFieldQAns.answer as { [type: string]: string }),
-          [selectedOption.value]: event.target.value,
-        },
-      };
-      travelQuestionnaireSet[existingTextFieldQid] = updatedQAns;
-      return {
-        ...newQuestionnaireSet,
-        [section]: travelQuestionnaireSet,
-      };
-    } else {
-      travelQuestionnaireSet.push({
-        qId: currentQuestion.id,
-        question: currentQuestion.question,
-        answer: {
-          [selectedOption.value]: event.target.value,
-        },
-      });
-      return {
-        ...newQuestionnaireSet,
-        [section]: travelQuestionnaireSet,
-      };
-    }
+    return updateState();
   }
+
+  //adding & updating textfield
+  const existingTextFieldQid = QuestionAnsSetArr.findIndex(
+    (tr) => tr.qId === currentQuestion.id
+  );
+  const newTextAnswer = {
+    qId: currentQuestion.id,
+    question: currentQuestion.question,
+    answer: {
+      [selectedOption.value]: event.target.value,
+    },
+  };
+  if (existingTextFieldQid !== -1) {
+    //update existing tet answers
+    const existingTextField = QuestionAnsSetArr[existingTextFieldQid];
+    const updatedTextfield = {
+      ...existingTextField,
+      answer: {
+        ...(existingTextField.answer as { [type: string]: string }),
+        [selectedOption.value]: event.target.value,
+      },
+    };
+    QuestionAnsSetArr[existingTextFieldQid] = updatedTextfield;
+  } else {
+    // Add new text answer
+    QuestionAnsSetArr.push(newTextAnswer);
+  }
+  return updateState();
 };
 
 // Helper function for updating progress bar
@@ -184,7 +226,11 @@ export const getSelectedOption = (
   currentQuestion,
   section
 ) => {
-  if (!questionnaireContext || !questionnaireContext[section]) {
+  if (
+    !questionnaireContext ||
+    !questionnaireContext[section] ||
+    !currentQuestion
+  ) {
     return;
   }
   //get the selected option from the context store
@@ -197,9 +243,25 @@ export const getSelectedOption = (
   if (currentQuestion.answerType !== "select") {
     return;
   }
+  if (currentQuestion.optionType === "multiple") {
+    if (!Array.isArray(currentQAns.answer)) {
+      currentQAns.answer = [];
+    }
+    //find all the indexes of multiple selected answers
+    const selectedMultipleIndex: string[] = currentQAns.answer.map((opt) => {
+      const index = currentQuestion.options.findIndex(
+        (qAns) => qAns.label === opt.label
+      );
+      if (index === -1) {
+        return;
+      }
+      return index;
+    });
+    return selectedMultipleIndex;
+  }
   //find the selected option index from the current options list matches with the selected option
   const selectedOptionIndex = currentQuestion.options.findIndex(
-    (opt) => opt.value === currentQAns.answer
+    (opt) => opt.label === currentQAns.answer.label
   );
   return selectedOptionIndex;
 };
