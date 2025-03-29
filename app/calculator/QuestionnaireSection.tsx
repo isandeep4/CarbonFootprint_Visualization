@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { AnswerI, QuestionnaireI, useCalculator } from "../contexts/CalculatorContext";
 import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
@@ -17,6 +17,7 @@ export type QuestionType = {
       prevQuestionId: string;
   }[];
   answerType: string;
+  optionType: string;
 }
 
 interface QuestionnaireSectionPropsI {
@@ -45,18 +46,42 @@ export default function QuestionnaireSection({
     {
       const { questionnaireContext, setQuestionnaireContext } 
         = useCalculator();
+      const [toggledButtons, setToggledButtons] = useState<{key: string, isToggled: boolean}[]>(); 
       const selectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
 
-      const handleOptionClick = (option) => {
-        setQuestionnaireContext(
-          prevQuestionnaire=>
-            updateQuestionnaire(prevQuestionnaire, currentQuestion, option, section, "select"));
+      useEffect(()=>{
+        const multipleAnswers = questionnaireContext[section]?.find(qAns => qAns.qId === "q1" && section === "foodQuestionnaire")?.answer;
+        const mapAnswersToToggle = (multipleAnswers as [])?.map((ans) => ({key: (ans as {label: string}).label, isToggled: true}));
+        setToggledButtons(mapAnswersToToggle);
+      }, [currentQuestion])
+
+      
+
+      const handleOptionClick = (option, label) => {
+        setToggledButtons(prevToggledBtns => {
+          const newToggledBtns = [...(prevToggledBtns || [])];
+          const existingBtnIndex = newToggledBtns.findIndex(btn => btn.key === label);
+          let isToggled = true; 
+          if(existingBtnIndex !== -1){
+            isToggled = !newToggledBtns[existingBtnIndex].isToggled;
+            newToggledBtns[existingBtnIndex].isToggled = isToggled;
+          }else{
+            newToggledBtns.push({
+              key: label,
+              isToggled: true
+            })
+          }
+          setQuestionnaireContext(prevQuestionnaire=>
+              updateQuestionnaire(prevQuestionnaire, currentQuestion, option, section, "select", currentQuestion.optionType, isToggled));
+          return newToggledBtns;
+        })
       }
       const handleTextFieldChange = (event, field) => {
         setQuestionnaireContext(
           prevQuestionnaire=>
-           updateQuestionnaire(prevQuestionnaire, currentQuestion, field, section, "textfield", event));
+           updateQuestionnaire(prevQuestionnaire, currentQuestion, field, section, "textfield", currentQuestion.optionType, true ,event));
       }
+
     return (
         <Box
           sx={{ 
@@ -83,12 +108,12 @@ export default function QuestionnaireSection({
                       sx={{ 
                         margin: "0.5rem", 
                         padding:"1rem", 
-                        bgcolor: selectedOptionIdx === index ? "white": "black", 
-                        color: selectedOptionIdx === index ? "black": "white",
-                        border: selectedOptionIdx === index ? "1px solid black" : "none"
+                        bgcolor: selectedOptionIdx === index || Array.isArray(selectedOptionIdx) && selectedOptionIdx?.includes(index)? "white": "black", 
+                        color: selectedOptionIdx === index ||  Array.isArray(selectedOptionIdx) && selectedOptionIdx && selectedOptionIdx?.includes(index) ? "black": "white",
+                        border: selectedOptionIdx === index ||  Array.isArray(selectedOptionIdx) && selectedOptionIdx && selectedOptionIdx?.includes(index)? "1px solid black" : "none"
                       }} 
                       key={index}
-                      onClick={()=> handleOptionClick(option)}
+                      onClick={()=> handleOptionClick(option, option.label)}
                     >
                       <Typography>
                         {option.label}
@@ -118,7 +143,7 @@ export default function QuestionnaireSection({
               <Button 
                  sx={{paddingX: "1rem"}} 
                  variant="outlined" 
-                 onClick={()=>onPrevClick()} 
+                 onClick={()=>{setToggledButtons([]); onPrevClick()}} 
                  disabled={currentQuestion?.id === "q1" && questionnaireType === "FOOD"}
                  >
                Back
@@ -126,7 +151,7 @@ export default function QuestionnaireSection({
               <Button 
                  variant="contained" 
                  sx={{ paddingX: "1rem"}} 
-                 onClick={()=>onNextClick()}
+                 onClick={()=>{setToggledButtons([]); onNextClick()}}
                  >
                Next
               </Button>

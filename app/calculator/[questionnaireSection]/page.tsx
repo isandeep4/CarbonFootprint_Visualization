@@ -6,7 +6,7 @@ import { Questionnaire } from "../../utils/mockQuestionnaire";
 import { getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionForCurrentSection, resetProgressBar, getSelectedOption } from "../../utils/helper_functions";
 import QuestionnaireSection, { QuestionType } from "../QuestionnaireSection";
 
-enum QuestionnaireSectionMapping {
+export enum QuestionnaireSectionMapping {
     "foodQuestionnaire" = "FOOD",
     "travelQuestionnaire" = "TRAVEL",
     "homeQuestionnaire" = "HOME",
@@ -38,10 +38,12 @@ export default function QuestionnaireSectionPage(){
 
     useEffect(()=>{
         setQuestionnaireType(QuestionnaireSectionMapping[section]);
+        setCurrentQuestion(Questionnaire[section][0]);
     }, [section]);
    
     const onNextClick = () => {
-        if(currentQuestion.answerType === "select" && !currentQuestion.options[alreadySelectedOptionIdx]){
+        if((currentQuestion.optionType === "single" && alreadySelectedOptionIdx === -1) 
+        || (currentQuestion.optionType === "multiple" && alreadySelectedOptionIdx.length < 1)){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
             return;
@@ -77,7 +79,8 @@ export default function QuestionnaireSectionPage(){
             id: nextQuestion.id, 
             question: nextQuestion.question ,
             options: nextQuestion.options, 
-            answerType: nextQuestion.answerType 
+            answerType: nextQuestion.answerType,
+            optionType: nextQuestion.optionType, 
         });
         setCurrentQuestionContext({
             id: nextQuestion.id, 
