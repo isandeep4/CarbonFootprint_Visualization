@@ -24,6 +24,8 @@ interface CalculatorContextType {
     setQuestionnaireContext: React.Dispatch<React.SetStateAction<QuestionnaireI>>;
     currentQuestionContext: QuestionType,
     setCurrentQuestionContext: React.Dispatch<React.SetStateAction<QuestionType | {}>>;
+    isPrevBtnClickedOnFirstQuestion: boolean, 
+    setIsPrevBtnClickedOnFirstQuestion: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CalculatorContext = createContext<CalculatorContextType | null>(null);
@@ -35,6 +37,7 @@ export default function CalculatorProvider({children}: {children: React.ReactNod
     const [travelProgressPer, setTravelProgressPer] = useState(1);
     const [homeProgressPer, setHomeProgressPer] = useState(1);
     const [currentQuestionContext, setCurrentQuestionContext] = useState(null);
+    const [isPrevBtnClickedOnFirstQuestion, setIsPrevBtnClickedOnFirstQuestion] = useState(false);
 
     return (
         <CalculatorContext.Provider value={{
@@ -49,7 +52,9 @@ export default function CalculatorProvider({children}: {children: React.ReactNod
           shoppingProgressPer,
           setShoppingProgressPer,
           currentQuestionContext,
-          setCurrentQuestionContext
+          setCurrentQuestionContext,
+          isPrevBtnClickedOnFirstQuestion,
+          setIsPrevBtnClickedOnFirstQuestion
         }}
         >
           {children}

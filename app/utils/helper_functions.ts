@@ -144,7 +144,7 @@ export const resetSubmittedAnswer = (setSelectedOption) => {
 export const getLastQuestionIdForSection = (section) => {
   return Questionnaire[section][Questionnaire[section].length - 1].id;
 };
-export const isFirstQuestionForCurrentSection = (currentQuestion) => {
+export const isFirstQuestionOfCurrentSection = (currentQuestion) => {
   console.log("currentQuestion.id", currentQuestion.id);
   return currentQuestion.id === "q1";
 };

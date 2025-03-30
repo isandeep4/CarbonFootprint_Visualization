@@ -3,7 +3,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCalculator } from "../../contexts/CalculatorContext";
 import { useEffect, useState } from "react";
 import { Questionnaire } from "../../utils/mockQuestionnaire";
-import { getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionForCurrentSection, resetProgressBar, getSelectedOption } from "../../utils/helper_functions";
+import { getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionOfCurrentSection, resetProgressBar, getSelectedOption } from "../../utils/helper_functions";
 import QuestionnaireSection, { QuestionType } from "../QuestionnaireSection";
 
 export enum QuestionnaireSectionMapping {
@@ -24,7 +24,7 @@ export default function QuestionnaireSectionPage(){
     } = useCalculator();
     const params = useParams();
     const section = params?.questionnaireSection as string;
-    const { questionnaireContext } = useCalculator();
+    const { questionnaireContext, isPrevBtnClickedOnFirstQuestion, setIsPrevBtnClickedOnFirstQuestion  } = useCalculator();
     const router = useRouter();
     const [currentQuestion, setCurrentQuestion] = useState<QuestionType>(currentQuestionContext || Questionnaire[section][0]);
     const alreadySelectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
@@ -38,10 +38,19 @@ export default function QuestionnaireSectionPage(){
 
     useEffect(()=>{
         setQuestionnaireType(QuestionnaireSectionMapping[section]);
-        setCurrentQuestion(Questionnaire[section][0]);
+        if(!isPrevBtnClickedOnFirstQuestion){
+          setCurrentQuestion(Questionnaire[section][0]);
+        }else{
+            //const currentSection = prevSection;
+            if(Questionnaire[section] && Questionnaire[section].length > 0){
+                const currentSectionLastQuestion =  Questionnaire[section][Questionnaire[section]?.length - 1];
+                setCurrentQuestion(currentSectionLastQuestion);
+            }
+        }
     }, [section]);
    
     const onNextClick = () => {
+        setIsPrevBtnClickedOnFirstQuestion(false);
         if((currentQuestion.optionType === "single" && alreadySelectedOptionIdx === -1) 
         || (currentQuestion.optionType === "multiple" && alreadySelectedOptionIdx.length < 1)){
             setSubmitError(true);
@@ -92,9 +101,10 @@ export default function QuestionnaireSectionPage(){
         updateProgress(progressFactor);
     }
     const onPrevClick = () => {
+        setIsPrevBtnClickedOnFirstQuestion(true);
         //switching back to prev q type
         //check if the back click on the first question of the current q and the prev q exist
-        if(isFirstQuestionForCurrentSection(currentQuestion) && prevSection){
+        if(isFirstQuestionOfCurrentSection(currentQuestion) && prevSection){
             //get last question of prev questionnaire section
             const currentSection = prevSection;
             const currentSectionLastQuestion =  Questionnaire[currentSection][Questionnaire[currentSection].length - 1];
