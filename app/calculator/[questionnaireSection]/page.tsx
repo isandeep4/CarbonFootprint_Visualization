@@ -32,7 +32,6 @@ export default function QuestionnaireSectionPage(){
     const [optionNotSelectedErr, setOptionNotSelectedErr] = useState("");
     const [submitError, setSubmitError] = useState(false);
     const nextSection = getNextSection(section);
-    const prevSection = getPrevSection(section);
     const {progressFactor, progressBarStatus, setProgressBarStatus} = getProgressBarContext(section);
     const [questionnaireType, setQuestionnaireType] = useState(QuestionnaireSectionMapping.foodQuestionnaire);
 
@@ -41,7 +40,6 @@ export default function QuestionnaireSectionPage(){
         if(!isPrevBtnClickedOnFirstQuestion){
           setCurrentQuestion(Questionnaire[section][0]);
         }else{
-            //const currentSection = prevSection;
             if(Questionnaire[section] && Questionnaire[section].length > 0){
                 const currentSectionLastQuestion =  Questionnaire[section][Questionnaire[section]?.length - 1];
                 setCurrentQuestion(currentSectionLastQuestion);
@@ -51,18 +49,22 @@ export default function QuestionnaireSectionPage(){
    
     const onNextClick = () => {
         setIsPrevBtnClickedOnFirstQuestion(false);
-        if((currentQuestion.optionType === "single" && alreadySelectedOptionIdx === -1) 
-        || (currentQuestion.optionType === "multiple" && alreadySelectedOptionIdx.length < 1)){
+        const isSelectWithoutAnswer = currentQuestion.answerType === "select" && alreadySelectedOptionIdx === undefined;
+        const isSingleWithoutAnswer = currentQuestion.optionType === "single" && alreadySelectedOptionIdx === -1;
+        const isMultipleWithoutAnswer = currentQuestion.optionType === "multiple" && (!Array.isArray(alreadySelectedOptionIdx) || alreadySelectedOptionIdx.length < 1);
+        if(isSelectWithoutAnswer || isSingleWithoutAnswer || isMultipleWithoutAnswer){
             setSubmitError(true);
             setOptionNotSelectedErr("Please select one option");
             return;
         }
-        if (currentQuestion.answerType === "textField" &&
-        Object.keys(questionnaireContext[section].find(
-            (qans) => qans.qId === currentQuestion.id)?.answer).length !== 3){
-            setSubmitError(true);
-            setOptionNotSelectedErr("Please provide one or more input");
-            return;
+        if (currentQuestion.answerType === "textField"){
+            const answers = questionnaireContext[section]?.find(
+                (qans) => qans.qId === currentQuestion.id)?.answer
+            if (!answers || Object.keys(answers).length !== 3) {
+                setOptionNotSelectedErr("Please provide all answers");
+                setSubmitError(true);
+                return;
+            }        
         }
         setSubmitError(false);
         if(currentQuestion.id === getLastQuestionIdForSection(section) && section === "shoppingQuestionnaire"){
@@ -102,25 +104,10 @@ export default function QuestionnaireSectionPage(){
     }
     const onPrevClick = () => {
         setIsPrevBtnClickedOnFirstQuestion(true);
-        //switching back to prev q type
-        //check if the back click on the first question of the current q and the prev q exist
-        if(isFirstQuestionOfCurrentSection(currentQuestion) && prevSection){
-            //get last question of prev questionnaire section
-            const currentSection = prevSection;
-            const currentSectionLastQuestion =  Questionnaire[currentSection][Questionnaire[currentSection].length - 1];
-            setCurrentQuestion(currentSectionLastQuestion);
-            setCurrentQuestionContext(currentSectionLastQuestion);
-            setQNo(Questionnaire[currentSection].length);
-            router.push(`/calculator/${currentSection}`);
-            setQNo(Questionnaire[currentSection].length);  
-            return;
-        }
-        updateProgress(-progressFactor);
-        const currentSelectedOption = currentQuestion.options[alreadySelectedOptionIdx];
-        const prevQuestion = getPreviousQuestion(Questionnaire[section], currentQuestion, currentSelectedOption);
+        const prevQuestion = getPreviousQuestion(
+            questionnaireContext[section], currentQuestion, section, updateProgress, progressFactor, setQNo, router);
         setCurrentQuestion(prevQuestion);
         setCurrentQuestionContext(prevQuestion);
-        setQNo(prev => prev-1);
     }
     // Helper function for updating progress bar
     const updateProgress = (value: number) => {
