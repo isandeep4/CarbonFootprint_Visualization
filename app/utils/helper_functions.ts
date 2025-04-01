@@ -18,12 +18,43 @@ export const getNextQuestion = (
   }
 };
 export const getPreviousQuestion = (
-  questionnaire,
+  questionnaireContext,
   currentQuestion,
-  optionSelected?
+  section,
+  updateProgress,
+  progressFactor,
+  setQNo,
+  router
 ) => {
+  const prevSection = getPrevSection(section);
+  //get question from previous section if the current section is on first question
+  if (isFirstQuestionOfCurrentSection(currentQuestion) && prevSection) {
+    setQNo(Questionnaire[prevSection].length);
+    router.push(`/calculator/${prevSection}`);
+    //get last question of prev questionnaire section
+    const prevSectionLastQuestion =
+      Questionnaire[prevSection][Questionnaire[prevSection].length - 1];
+    return prevSectionLastQuestion;
+  }
+  if (section === "travelQuestionnaire") {
+    const travelQnsIds = questionnaireContext?.map((qAns) => qAns.qId);
+    const dependentQuestions = {
+      q4: ["q3", "q1"],
+      q3: ["q2", "q1"],
+    };
+
+    if (dependentQuestions[currentQuestion.id]) {
+      for (const depQId of dependentQuestions[currentQuestion.id]) {
+        if (travelQnsIds.includes(depQId)) {
+          return Questionnaire[section].find((qAns) => qAns.id === depQId);
+        }
+      }
+    }
+  }
+  updateProgress(-progressFactor);
+  setQNo((prev) => prev - 1);
   const previousQuestionId = currentQuestion.options[0]?.prevQuestionId;
-  return questionnaire.find((qns) => qns.id === previousQuestionId);
+  return Questionnaire[section].find((qns) => qns.id === previousQuestionId);
 };
 
 export const updateQuestionnaire = (
@@ -59,6 +90,17 @@ export const updateQuestionnaire = (
     if (existingQAnsIndex !== -1) {
       if (optionType === "single") {
         //update single choice answer
+        //remove all already answered if q1 and q2 question answer updated
+        const travelQuestionNo1Index = QuestionAnsSetArr.findIndex(
+          (qAns) => qAns.qId === "q1"
+        );
+        if (
+          travelQuestionNo1Index !== -1 &&
+          section === "travelQuestionnaire" &&
+          currentQuestion.id === "q1"
+        ) {
+          QuestionAnsSetArr.length = 0;
+        }
         QuestionAnsSetArr[existingQAnsIndex] = updatedAnswer;
       } else {
         //handling multiple selection
