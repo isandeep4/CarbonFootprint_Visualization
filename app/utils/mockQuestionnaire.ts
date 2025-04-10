@@ -41,7 +41,7 @@ export const Questionnaire = {
           prevQuestionId: null,
         },
         {
-          label: "Vegetables",
+          label: "Vegan",
           value: 5,
           nextQuestionId: "q2",
           prevQuestionId: null,
@@ -58,25 +58,25 @@ export const Questionnaire = {
       options: [
         {
           label: "0$",
-          value: "0$",
+          value: 0,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "1$-10$",
-          value: "1$-10$",
+          value: 0.5,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "10$-50$",
-          value: "10$-50$",
+          value: 1,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "More than 50$",
-          value: ">50$",
+          value: 3,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -96,19 +96,25 @@ export const Questionnaire = {
         },
         {
           label: "0%-10%",
-          value: "0%-10%",
+          value: "5%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "10%-30%",
-          value: "10%-50%",
+          label: "10%-20%",
+          value: "15%",
+          nextQuestionId: "q4",
+          prevQuestionId: "q2",
+        },
+        {
+          label: "20%-30%",
+          value: "25%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "More than 30$",
-          value: ">30%",
+          value: "40%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
@@ -118,24 +124,24 @@ export const Questionnaire = {
     {
       id: "q4",
       question:
-        "How often do you buy locally produced food that is not imported to the UK?",
+        "How often do you buy locally produced food that is not imported?",
       optionType: "single",
       options: [
         {
-          label: "Local market",
-          value: "local_market",
+          label: "A lot of food that I buy is locally produced",
+          value: 0.6,
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
         {
-          label: "Food mart",
-          value: "food_mart",
+          label: "Some of the food that I buy is locally produced",
+          value: 0.8,
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
         {
-          label: "Both",
-          value: "both",
+          label: "I don't worry about where my food comes from",
+          value: 1,
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
@@ -152,13 +158,13 @@ export const Questionnaire = {
       options: [
         {
           label: "Car",
-          value: "car",
+          value: 20,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "Motorbike",
-          value: "motorbike",
+          value: 100,
           nextQuestionId: "q3",
           prevQuestionId: null,
         },
@@ -184,25 +190,25 @@ export const Questionnaire = {
       options: [
         {
           label: "Petrol",
-          value: "petrol",
+          value: 10,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "Electric",
-          value: "electric",
+          value: 5,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "Diesel",
-          value: "diesel",
+          value: 8,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "Hybrid",
-          value: "hybrid",
+          value: 6,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -217,31 +223,31 @@ export const Questionnaire = {
       options: [
         {
           label: "Under 2 hours",
-          value: "2hrs",
+          value: 50,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "2 to 5 hours",
-          value: "2to5hrs",
+          value: 100,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "5 to 15 hours",
-          value: "5to15hrs",
+          value: 300,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "15 to 25 hours",
-          value: "15to25hrs",
+          value: 600,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "Over 25 hours",
-          value: "25hrs",
+          value: 750,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
@@ -256,37 +262,37 @@ export const Questionnaire = {
       options: [
         {
           label: "I don't travel by train",
-          value: "none",
+          value: 0,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "under 2 hours",
-          value: "2hrs",
+          value: 100,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "2 to 5 hours",
-          value: "2to5hrs",
+          value: 200,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "5 to 15 hours",
-          value: "55to15hrs",
+          value: 500,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "15 to 25 hours",
-          value: "15to25hrs",
+          value: 1000,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "Over 25 hours",
-          value: "25hrs",
+          value: 1500,
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
@@ -301,19 +307,19 @@ export const Questionnaire = {
       options: [
         {
           label: "Domestic (UK / Ireland)",
-          value: "domestic",
+          value: 90,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "To/from Europe",
-          value: "continent",
+          value: 120,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "To/from outside Europe",
-          value: "international",
+          value: 250,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
@@ -327,7 +333,7 @@ export const Questionnaire = {
       options: [
         {
           label: "None of them",
-          value: "none",
+          value: 0,
           nextQuestionId: null,
           prevQuestionId: "q5",
         },
@@ -551,25 +557,25 @@ export const Questionnaire = {
       options: [
         {
           label: "0$",
-          value: "0",
+          value: 0,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "1$-60$",
-          value: "1-60",
+          value: 50,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "60$-150$",
-          value: "terrace",
+          value: 100,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "More than 150$",
-          value: ">150$",
+          value: 150,
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
@@ -583,20 +589,20 @@ export const Questionnaire = {
       optionType: "single",
       options: [
         {
-          label: "1$",
-          value: "1",
+          label: "1-10$",
+          value: 5,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "1$ - 60$",
-          value: "1-60",
+          value: 20,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
           label: "More than 60$",
-          value: ">60$",
+          value: 30,
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -606,30 +612,30 @@ export const Questionnaire = {
     {
       id: "q3",
       question:
-        "In a typical month, how much do you spend on phone, internet and TV contracts?",
+        "In a typical day, how much time do you spend on phone, internet and TV contracts?",
       optionType: "single",
       options: [
         {
           label: "0$",
-          value: "0",
+          value: 0,
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "1$ - 35$",
-          value: "2",
+          label: "1hour - 3hour",
+          value: "100g",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "35$ - 70$",
-          value: "35-70",
+          label: "3hour - 5hour",
+          value: "200g",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "70$+",
-          value: ">=70$",
+          label: "5hour - 7hour",
+          value: "400g",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
@@ -639,30 +645,36 @@ export const Questionnaire = {
     {
       id: "q4",
       question:
-        "In a typical month, how much do you spend on entertainment and hobbies (sports/gym, cinema, books, newspapers, gardening, computer games)",
+        "In a typical week, how much do you spend on entertainment and hobbies (sports/gym, cinema, books, newspapers, gardening, computer games)",
       optionType: "single",
       options: [
         {
+          label: "0$",
+          value: 0,
+          nextQuestionId: "q5",
+          prevQuestionId: "q3",
+        },
+        {
           label: "0$ - 25$",
-          value: "0-25",
+          value: 0.6,
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
           label: "25$ - 50$",
-          value: "25-50",
+          value: 1.6,
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
           label: "50$ - 75$",
-          value: "50-75",
+          value: 2.4,
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
           label: "75$+",
-          value: ">75$",
+          value: 3.5,
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
@@ -676,31 +688,31 @@ export const Questionnaire = {
       options: [
         {
           label: "Food",
-          value: "food",
+          value: 2.5,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "Paper",
-          value: "Paper",
+          value: 1,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "Tin Cans",
-          value: "tinCans",
+          value: 1.5,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "Plastic",
-          value: "plastic",
+          value: 1.2,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "Glass",
-          value: "glass",
+          value: 0.6,
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
