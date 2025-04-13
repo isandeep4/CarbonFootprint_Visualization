@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
-import { AnswerI, QuestionnaireI, useCalculator } from "../contexts/CalculatorContext";
+import { useCalculator } from "../contexts/CalculatorContext";
 import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
 
 export type QuestionType = {
@@ -81,6 +81,17 @@ export default function QuestionnaireSection({
           prevQuestionnaire=>
            updateQuestionnaire(prevQuestionnaire, currentQuestion, field, section, "textfield", currentQuestion.optionType, true ,event));
       }
+      const onSubmitClick = async () => {
+        try {
+          const response = await fetch("/api/submit", {
+            method: "POST",
+            body:  JSON.stringify(questionnaireContext),
+          });
+          console.log("response", response);
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
     return (
         <Box
@@ -151,9 +162,16 @@ export default function QuestionnaireSection({
               <Button 
                  variant="contained" 
                  sx={{ paddingX: "1rem"}} 
-                 onClick={()=>{setToggledButtons([]); onNextClick()}}
+                 onClick={()=>{
+                  if(section === "shoppingQuestionnaire" && currentQuestion.id === "q5"){
+                    onSubmitClick()
+                  }else{
+                    setToggledButtons([]); 
+                    onNextClick()
+                  }
+                }}
                  >
-               Next
+               {section === "shoppingQuestionnaire" && currentQuestion.id === "q5" ? "Submit" : "Next"}
               </Button>
             </Box>
             {submitError && <Typography sx={{ padding: "1rem", textAlign: "center"}}>{optionNotSelectederr}</Typography>}
