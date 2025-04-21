@@ -1,9 +1,8 @@
 export async function POST(req) {
   try {
     const body = await req.json();
-    console.log("Received data:", body);
     const apiEndpoint =
-      "https://p29hshanr9.execute-api.us-east-1.amazonaws.com/save-carbon-footprint";
+      "https://2afn68yoag.execute-api.us-east-1.amazonaws.com/save-carbon-footprint";
     const response = await fetch(apiEndpoint, {
       method: "POST",
       headers: {
@@ -12,7 +11,6 @@ export async function POST(req) {
       body: JSON.stringify(body),
     });
     const data = await response.json();
-    console.error("data", data);
     return Response.json({ success: true, message: "Data received." });
   } catch (error) {
     console.error("Error in API:", error);

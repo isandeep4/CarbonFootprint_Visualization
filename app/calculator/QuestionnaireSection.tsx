@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { useCalculator } from "../contexts/CalculatorContext";
 import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
+import { redirect } from "next/navigation";
 
 export type QuestionType = {
   id: string;
@@ -88,6 +89,7 @@ export default function QuestionnaireSection({
             body:  JSON.stringify(questionnaireContext),
           });
           console.log("response", response);
+          //redirect('/result');
         } catch (error) {
           console.log(error);
         }
