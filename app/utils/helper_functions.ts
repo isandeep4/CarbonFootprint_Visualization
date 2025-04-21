@@ -78,11 +78,8 @@ export const updateQuestionnaire = (
   if (inputType === "select") {
     const updatedAnswer: AnswerI = {
       qId: currentQuestion.id,
-      question: currentQuestion.question,
-      answer: {
-        label: selectedOption.label,
-        value: selectedOption.value,
-      },
+      // question: currentQuestion.question,
+      answer: selectedOption.value,
     };
     const existingQAnsIndex = QuestionAnsSetArr.findIndex(
       (tr) => tr.qId === currentQuestion.id
@@ -104,27 +101,20 @@ export const updateQuestionnaire = (
         QuestionAnsSetArr[existingQAnsIndex] = updatedAnswer;
       } else {
         //handling multiple selection
-        const newAnswer = QuestionAnsSetArr[existingQAnsIndex].answer as {
-          label: string;
-          value: number;
-        }[];
-        const existingAnsIndex = newAnswer.findIndex(
-          (ans) => ans.label === selectedOption.label
-        );
+        const newAnswer = QuestionAnsSetArr[existingQAnsIndex]
+          .answer as string[];
+        const existingAnsIndex = newAnswer.indexOf(selectedOption.value);
         if (existingAnsIndex !== -1) {
           //update existing answers
           //remove answer if deselected
           if (!isToggled) {
             newAnswer.splice(existingAnsIndex, 1);
           } else {
-            newAnswer[existingAnsIndex].value = selectedOption.value;
+            newAnswer.push(selectedOption.value);
           }
         } else {
           // Add new answers
-          newAnswer.push({
-            label: selectedOption.label,
-            value: selectedOption.value,
-          });
+          newAnswer.push(selectedOption.value);
         }
         updatedAnswer.answer = newAnswer;
         QuestionAnsSetArr[existingQAnsIndex] = updatedAnswer;
@@ -136,10 +126,8 @@ export const updateQuestionnaire = (
       } else {
         QuestionAnsSetArr.push({
           qId: currentQuestion.id,
-          question: currentQuestion.question,
-          answer: [
-            { label: selectedOption.label, value: selectedOption.value },
-          ],
+          // question: currentQuestion.question,
+          answer: [selectedOption.value],
         });
       }
     }
@@ -152,7 +140,7 @@ export const updateQuestionnaire = (
   );
   const newTextAnswer = {
     qId: currentQuestion.id,
-    question: currentQuestion.question,
+    // question: currentQuestion.question,
     answer: {
       [selectedOption.value]: event.target.value,
     },
@@ -292,7 +280,7 @@ export const getSelectedOption = (
     //find all the indexes of multiple selected answers
     const selectedMultipleIndex: string[] = currentQAns.answer.map((opt) => {
       const index = currentQuestion.options.findIndex(
-        (qAns) => qAns.label === opt.label
+        (qAns) => qAns.value === opt
       );
       if (index === -1) {
         return;
@@ -303,7 +291,7 @@ export const getSelectedOption = (
   }
   //find the selected option index from the current options list matches with the selected option
   const selectedOptionIndex = currentQuestion.options.findIndex(
-    (opt) => opt.label === currentQAns.answer.label
+    (opt) => opt.value === currentQAns.answer
   );
   return selectedOptionIndex;
 };
@@ -311,10 +299,10 @@ export const getSelectedOption = (
 export const getTextFieldValue = (
   questionnaireContext,
   currentQuestion,
-  label
+  value
 ) => {
-  const textFieldValue = questionnaireContext.find(
+  const textField = questionnaireContext.find(
     (qans) => qans.qId === currentQuestion.id
-  )?.answer[label];
-  return textFieldValue ? textFieldValue : 0;
+  )?.answer[value];
+  return textField ? textField : 0;
 };
