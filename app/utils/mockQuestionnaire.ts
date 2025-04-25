@@ -5,19 +5,19 @@ export const Questionnaire = {
       question: "What do you eat in a week?",
       options: [
         {
-          label: "BEEF(Kg)",
+          label: "BEEF",
           value: "beef",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "LAMB & MUTTON(Kg)",
+          label: "LAMB & MUTTON",
           value: "meat",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "PORK(Kg)",
+          label: "PORK",
           value: "pork",
           nextQuestionId: "q2",
           prevQuestionId: null,
@@ -63,14 +63,14 @@ export const Questionnaire = {
           prevQuestionId: "q1",
         },
         {
-          label: "1$-10$",
-          value: "1$><10$",
+          label: "1$-20$",
+          value: "1$><20$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
-          label: "10$-50$",
-          value: "10$><50$",
+          label: "20$-50$",
+          value: "20$><50$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -134,13 +134,13 @@ export const Questionnaire = {
           prevQuestionId: "q3",
         },
         {
-          label: "A lot of food that I buy is from grocery store",
+          label: "Some of the food that I buy is from grocery store",
           value: "mall",
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
         {
-          label: "Some of the food that I buy is locally produced",
+          label: "I don't worry about where my food comes from",
           value: "both",
           nextQuestionId: null,
           prevQuestionId: "q3",
