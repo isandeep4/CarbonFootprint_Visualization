@@ -313,13 +313,13 @@ export const Questionnaire = {
         },
         {
           label: "To/from Continent",
-          value: "inside_continent",
+          value: "intra_continent",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
           label: "To/from outside Continent",
-          value: "outside_continent",
+          value: "inter_continent",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
@@ -589,14 +589,20 @@ export const Questionnaire = {
       optionType: "single",
       options: [
         {
+          label: "0$",
+          value: "0$",
+          nextQuestionId: "q4",
+          prevQuestionId: "q2",
+        },
+        {
           label: "1$-10$",
           value: "1$><10$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
-          label: "1$ - 60$",
-          value: "1$><60$",
+          label: "10$ - 60$",
+          value: "10$><60$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
