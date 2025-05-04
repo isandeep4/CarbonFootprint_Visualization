@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import { useCalculator } from "../contexts/CalculatorContext";
 import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
 import { redirect } from "next/navigation";
+import { useSession } from '@toolpad/core/useSession';
 
 export type QuestionType = {
   id: string;
@@ -49,6 +50,8 @@ export default function QuestionnaireSection({
         = useCalculator();
       const [toggledButtons, setToggledButtons] = useState<{key: string, isToggled: boolean}[]>(); 
       const selectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
+      const session = useSession();
+      console.log("session", session);
 
       useEffect(()=>{
         const multipleAnswers = questionnaireContext[section]?.find(qAns => qAns.qId === "q1" && section === "foodQuestionnaire")?.answer;
@@ -86,12 +89,14 @@ export default function QuestionnaireSection({
         try {
           const response = await fetch("/api/submit", {
             method: "POST",
-            body:  JSON.stringify(questionnaireContext),
+            body:  JSON.stringify({id: session.user.id, ...questionnaireContext}),
           });
           console.log("response", response);
-          //redirect('/result');
         } catch (error) {
           console.log(error);
+        }
+        finally {
+          redirect('result');
         }
       }
 
@@ -180,4 +185,8 @@ export default function QuestionnaireSection({
          </Box>
         </Box>
     )
+}
+
+function useContext(SessionContext: any) {
+  throw new Error("Function not implemented.");
 }

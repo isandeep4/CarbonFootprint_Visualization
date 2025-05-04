@@ -22,6 +22,7 @@ export default function RootLayout({
     const [session, setSession] = React.useState<Session | null>({
       user: {
         name: 'Sandeep Kumar Sahoo',
+        id: "isandeep",
         email: 'isandeepsahoo5@gmail.com',
         image: 'https://avatars.githubusercontent.com/u/19550456',
       },
@@ -32,6 +33,7 @@ export default function RootLayout({
           setSession({
             user: {
               name: 'Sandeep Kumar Sahoo',
+              id: "isandeep",
               email: 'isandeepsahoo5@gmail.com',
               image: 'https://avatars.githubusercontent.com/u/19550456',
             },

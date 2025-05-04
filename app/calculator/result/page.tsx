@@ -1,12 +1,15 @@
 import { Box } from "@mui/material";
 import { TotalFootprint } from "./totalFootprint";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 
 async function fetchFootprint() {
     const res = await fetch(
-      "https://f4n690ljh0.execute-api.us-east-1.amazonaws.com/carbon-footprint-insights?user_id=c8efc7bd-b8de-4b9e-90fb-b084e6b10976"
+      "https://ov02cjn5mi.execute-api.us-east-1.amazonaws.com/carbon-footprint-insights?user_id=isandeep",
+      { cache: 'no-store' }
     );
-    return res.json();
+    const data = res.json();
+    console.log('API response:', data); 
+    return data
   }
 
 const Result = () => {
