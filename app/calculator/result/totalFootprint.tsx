@@ -1,14 +1,11 @@
 "use client"
 import Grid from '@mui/material/Grid2';
-import Image from 'next/image'
-import HomeIcon from '@mui/icons-material/Home';
-import RamenDiningIcon from '@mui/icons-material/RamenDining';
-import LocalAirportIcon from '@mui/icons-material/LocalAirport';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import Image from 'next/image';
 import { Box, Button, Paper, Typography, styled } from "@mui/material";
 import { FC, use } from 'react';
+import { Breakdown } from './breakdown';
 
-const Item = styled(Paper)(({ theme }) => ({
+export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(2),
@@ -21,7 +18,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export const TotalFootprint: FC<{footprint: Promise<any>}> = ({footprint}) => {
     const data = use(footprint);
-    console.log("data", data.total_emission);
+    console.log("data", data);
     return (
         <><Grid
             container
@@ -62,7 +59,7 @@ export const TotalFootprint: FC<{footprint: Promise<any>}> = ({footprint}) => {
                     <Item sx={{ bgcolor: "black", color: "white" }}>
                         <Box>
                             <Typography variant="h6" gutterBottom sx={{ color: "red" }}>India average footprint for 2025*</Typography>
-                            <Typography variant="h4" gutterBottom>8.4 TONNES</Typography>
+                            <Typography variant="h4" gutterBottom>{data?.regional_emission} kg</Typography>
                             <Typography variant="body1" gutterBottom>* assuming the India per capita footprint follows the same trajectory as the UK Climate Change Committee Balanced Net Zero Pathway</Typography>
                         </Box>
                     </Item>
@@ -74,7 +71,7 @@ export const TotalFootprint: FC<{footprint: Promise<any>}> = ({footprint}) => {
                                 Your Footprint Is
                             </Typography>
                             <Typography variant="h4" gutterBottom>
-                                127%
+                                { Math.abs((data as any)?.difference_percentage)}% {`${data?.difference_percentage < 0 ? " above " : " below "}`}
                             </Typography>
                             <Typography variant="h6" gutterBottom>
                                 Of the India average for 2025
@@ -86,112 +83,13 @@ export const TotalFootprint: FC<{footprint: Promise<any>}> = ({footprint}) => {
                     <Item sx={{ bgcolor: "black", color: "white" }}>
                         <Box>
                             <Typography sx={{ color: "red" }} variant="h6" gutterBottom> World average </Typography>
-                            <Typography variant="h4" gutterBottom> 6.3 TONNES </Typography>
+                            <Typography variant="h4" gutterBottom> {data?.global_emission} Kg </Typography>
                         </Box>
                     </Item>
                 </Grid>
             </Grid>
-        </Grid><Grid container direction="column" spacing={4}>
-                <Box>
-                    <Typography variant="h4">Lets Break It Down</Typography>
-                    <Typography variant="h5">YOUR FOOTPRINT IS EQUAL TO 10.7T</Typography>
-                    <Typography>YOUR BREAKDOWN EXPLAINED</Typography>
-                </Box>
-                <Grid container direction="row"
-                    sx={{
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <Grid container direction="row" size={{ xs: 6, md: 6 }} spacing={0}>
-                        <Grid size={{ xs: 6, md: 4 }}>
-                            <Item sx={{ bgcolor: "#0094d5" }}>
-                                <Box sx={{ padding: "2.6rem" }}>
-                                    <HomeIcon />
-                                    <Typography>21%</Typography>
-                                </Box>
-                            </Item>
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 8 }}>
-                            <Item>
-                                <Box>
-                                    <Typography>Home</Typography>
-                                    <Typography>Your consumption is equal to 2 tonnes</Typography>
-                                    <Typography>This is roughly the same weight as 2 Polar Bears</Typography>
-                                    <Button>Reduce this score</Button>
-                                </Box>
-                            </Item>
-                        </Grid>
-                    </Grid>
-                    <Grid container direction="row" size={{ xs: 6, md: 6 }} spacing={0}>
-                        <Grid size={{ xs: 4, md: 4 }}>
-                            <Item sx={{ bgcolor: "#00b9ad" }}>
-                                <Box sx={{ padding: "2.6rem" }}>
-                                    <RamenDiningIcon />
-                                    <Typography>10%</Typography>
-                                </Box>
-                            </Item>
-                        </Grid>
-                        <Grid size={{ xs: 8, md: 8 }}>
-                            <Item>
-                                <Box>
-                                    <Typography>FOOD</Typography>
-                                    <Typography>Your consumption is less than 1 tonne</Typography>
-                                    <Typography>This is roughly the same weight as 3 Amur Tigers</Typography>
-                                    <Button>Reduce this score</Button>
-                                </Box>
-                            </Item>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid container direction="row"
-                    sx={{
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <Grid container direction="row" size={{ xs: 6, md: 6 }} spacing={0}>
-                        <Grid size={{ xs: 4, md: 4 }}>
-                            <Item sx={{ bgcolor: "#f89834" }}>
-                                <Box sx={{ padding: "2.6rem" }}>
-                                    <LocalAirportIcon />
-                                    <Typography>56%</Typography>
-                                </Box>
-                            </Item>
-                        </Grid>
-                        <Grid size={{ xs: 8, md: 8 }}>
-                            <Item>
-                                <Box>
-                                    <Typography>TRAVEL</Typography>
-                                    <Typography>Your consumption is less than 5 tonne</Typography>
-                                    <Typography>This is roughly the same weight as 37 Giant Pandas</Typography>
-                                    <Button>Reduce this score</Button>
-                                </Box>
-                            </Item>
-                        </Grid>
-                    </Grid>
-                    <Grid container direction="row" size={{ xs: 6, md: 6 }} spacing={0}>
-                        <Grid size={{ xs: 6, md: 4 }}>
-                            <Item sx={{ bgcolor: "#d04092" }}>
-                                <Box sx={{ padding: "2.6rem" }}>
-                                    <ShoppingBasketIcon />
-                                    <Typography>13%</Typography>
-                                </Box>
-                            </Item>
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 8 }}>
-                            <Item>
-                                <Box>
-                                    <Typography>SHOPPING</Typography>
-                                    <Typography>Your consumption is less than 1 tonne</Typography>
-                                    <Typography>This is roughly the same weight as 5 mountain gorilla</Typography>
-                                    <Button>Reduce this score</Button>
-                                </Box>
-                            </Item>
-                        </Grid>
-                    </Grid>
-                </Grid>
-
-            </Grid></>
+        </Grid>
+        <Breakdown />
+        </>
     )
 }

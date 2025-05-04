@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { TotalFootprint } from "./totalFootprint";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 
 async function fetchFootprint() {
     const res = await fetch(
