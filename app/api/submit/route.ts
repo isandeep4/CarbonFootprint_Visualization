@@ -2,7 +2,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const apiEndpoint =
-      "https://ov02cjn5mi.execute-api.us-east-1.amazonaws.com/save-carbon-footprint";
+      "https://i5j51k7588.execute-api.us-east-1.amazonaws.com/save-carbon-footprint";
     const response = await fetch(apiEndpoint, {
       method: "POST",
       headers: {

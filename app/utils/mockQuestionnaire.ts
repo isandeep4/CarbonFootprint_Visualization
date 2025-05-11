@@ -591,8 +591,8 @@ export const Questionnaire = {
         {
           label: "0$",
           value: "0$",
-          nextQuestionId: "q4",
-          prevQuestionId: "q2",
+          nextQuestionId: "q3",
+          prevQuestionId: "q1",
         },
         {
           label: "1$-10$",
