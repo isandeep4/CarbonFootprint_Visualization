@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { colors, keyToLabel, mockMonthlyData } from "../utils/mockMonthlyData";
 import { useQuery } from "@apollo/client";
 import { GET_USER_CARBON_DATA } from "../graphql/queries/userCarbonDataQueries";
+import React from "react";
 
 type EmissionData = {
     "month": string,
