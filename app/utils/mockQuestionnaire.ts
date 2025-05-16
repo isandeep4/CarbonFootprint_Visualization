@@ -649,7 +649,7 @@ export const Questionnaire = {
         },
         {
           label: "Tin Cans",
-          value: "tinCans",
+          value: "metal",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
