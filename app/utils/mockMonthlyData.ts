@@ -1,12 +1,14 @@
 export const keyToLabel: { [key: string]: string } = {
   food: "Emission from food (kg)",
   transport: "Emission from transport (kg)",
-  energy: "Emission from energy (kg)",
+  home: "Emission from home (kg)",
+  shopping: "Emission from shopping (kg)",
 };
 export const colors: { [key: string]: string } = {
   food: "lightgray",
   transport: "lightgreen",
-  energy: "yellow",
+  home: "yellow",
+  shopping: "lightblue",
 };
 
 export const mockMonthlyData = [

@@ -12,6 +12,12 @@ import {
   type Navigation,
 } from '@toolpad/core/AppProvider';
 import CalculatorProvider from "./contexts/CalculatorContext";
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: "http://localhost:4000/",
+  cache: new InMemoryCache(),
+})
 
 
 export default function RootLayout({
@@ -71,11 +77,13 @@ export default function RootLayout({
               title: 'CARBON FOOTPRINT TRACKER',
             }}
           >
-            <DashboardLayout>
-            <CalculatorProvider>
-              {children}
-            </CalculatorProvider>
-            </DashboardLayout>
+            <ApolloProvider client={client}>
+              <DashboardLayout>
+              <CalculatorProvider>
+                {children}
+              </CalculatorProvider>
+              </DashboardLayout>
+            </ApolloProvider>
           </NextAppProvider>
         </body>
       </html>

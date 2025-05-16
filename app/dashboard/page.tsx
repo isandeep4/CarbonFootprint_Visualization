@@ -3,6 +3,9 @@ import { Box, Card, CardContent, Typography } from "@mui/material";
 import { LineChart, PieChart } from '@mui/x-charts';
 import { useEffect, useState } from "react";
 import { colors, keyToLabel, mockMonthlyData } from "../utils/mockMonthlyData";
+import { useQuery } from "@apollo/client";
+import { GET_USER_CARBON_DATA } from "../graphql/queries/userCarbonDataQueries";
+import React from "react";
 
 type EmissionData = {
     "month": string,
@@ -12,16 +15,14 @@ type EmissionData = {
 }
 
 export default function Dashboard(){
-    const [emissionDataCategorically, setEmissionDataCategorically] = useState<EmissionData[]>([]);
-    useEffect(()=>{
-        const emissionData = mockMonthlyData.map((monthlyData) => ({
-            month: monthlyData.month,
-            food: monthlyData.food,
-            transport: monthlyData.transport,
-            energy: monthlyData.energy
-        }))
-        setEmissionDataCategorically(emissionData);
-    }, []);
+    const { loading, error, data } = useQuery(GET_USER_CARBON_DATA, {
+        variables: { "id": "isandeep"}
+    });
+
+    if (loading) return "...loading";
+    if (error) return `Error! ${error.message}`;
+    console.log("data", data);
+   
     return(
         <Box>
             <Box className="m-2">
@@ -43,7 +44,8 @@ export default function Dashboard(){
                             data: [
                                 { id: 0, value: 10, label: 'Transport' },
                                 { id: 1, value: 15, label: 'Food' },
-                                { id: 2, value: 20, label: 'Energy' },
+                                { id: 2, value: 20, label: 'Shopping' },
+                                { id: 3, value: 30, label: 'Home' },
                             ],
                             },
                         ]}
@@ -68,7 +70,7 @@ export default function Dashboard(){
                             label: keyToLabel[key],
                             color: colors[key]
                         }))}
-                        dataset={emissionDataCategorically}
+                        dataset={data?.UserCarbonDetails.carbonFootprints}
                         height= {300}
                         width={800}
                     />
