@@ -4,8 +4,7 @@ import { Questionnaire } from '../utils/mockQuestionnaire';
 
 export type AnswerI = {
   qId: string;
-  question: string;
-  answer: string | {};
+  answer: string | {} | [];
 };
 export type QuestionnaireI = {
   [type: string]: AnswerI[];
@@ -24,6 +23,8 @@ interface CalculatorContextType {
     setQuestionnaireContext: React.Dispatch<React.SetStateAction<QuestionnaireI>>;
     currentQuestionContext: QuestionType,
     setCurrentQuestionContext: React.Dispatch<React.SetStateAction<QuestionType | {}>>;
+    isPrevBtnClickedOnFirstQuestion: boolean, 
+    setIsPrevBtnClickedOnFirstQuestion: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CalculatorContext = createContext<CalculatorContextType | null>(null);
@@ -34,7 +35,8 @@ export default function CalculatorProvider({children}: {children: React.ReactNod
     const [shoppingProgressPer, setShoppingProgressPer] = useState(1);
     const [travelProgressPer, setTravelProgressPer] = useState(1);
     const [homeProgressPer, setHomeProgressPer] = useState(1);
-    const [currentQuestionContext, setCurrentQuestionContext] = useState(Questionnaire["foodQuestionnaire"][0])
+    const [currentQuestionContext, setCurrentQuestionContext] = useState(null);
+    const [isPrevBtnClickedOnFirstQuestion, setIsPrevBtnClickedOnFirstQuestion] = useState(false);
 
     return (
         <CalculatorContext.Provider value={{
@@ -49,7 +51,9 @@ export default function CalculatorProvider({children}: {children: React.ReactNod
           shoppingProgressPer,
           setShoppingProgressPer,
           currentQuestionContext,
-          setCurrentQuestionContext
+          setCurrentQuestionContext,
+          isPrevBtnClickedOnFirstQuestion,
+          setIsPrevBtnClickedOnFirstQuestion
         }}
         >
           {children}

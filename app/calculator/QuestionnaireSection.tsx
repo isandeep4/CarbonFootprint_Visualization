@@ -2,8 +2,12 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
-import { Dispatch, SetStateAction } from "react";
+import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
+import { useCalculator } from "../contexts/CalculatorContext";
+import { getSelectedOption, getTextFieldValue, updateQuestionnaire } from "../utils/helper_functions";
+import { redirect } from "next/navigation";
+import { useSession } from '@toolpad/core/useSession';
 
 export type QuestionType = {
   id: string;
@@ -15,39 +19,87 @@ export type QuestionType = {
       prevQuestionId: string;
   }[];
   answerType: string;
+  optionType: string;
 }
 
 interface QuestionnaireSectionPropsI {
     qNo: number;
     progressBarStatus: number,
     currentQuestion: QuestionType,
-    setSelectedOption: Dispatch<SetStateAction<{
-        id: string;
-        value: string| {
-            [key: string]: string;
-        };
-        nextQuestionId: string;
-        prevQuestionId: string;
-    }>>;
     onPrevClick: () => void;
     onNextClick: () => void;
     submitError: boolean;
     optionNotSelectederr: string;
     questionnaireType: string;
+    section: string;
 }
 
 export default function QuestionnaireSection({
      qNo, 
      progressBarStatus, 
      currentQuestion, 
-     setSelectedOption, 
      onPrevClick, 
      onNextClick, 
      submitError, 
      optionNotSelectederr,
-     questionnaireType
+     questionnaireType,
+     section
     }: QuestionnaireSectionPropsI)
     {
+      const { questionnaireContext, setQuestionnaireContext } 
+        = useCalculator();
+      const [toggledButtons, setToggledButtons] = useState<{key: string, isToggled: boolean}[]>(); 
+      const selectedOptionIdx = getSelectedOption(questionnaireContext, currentQuestion, section);
+      const session = useSession();
+      console.log("session", session);
+
+      useEffect(()=>{
+        const multipleAnswers = questionnaireContext[section]?.find(qAns => qAns.qId === "q1" && section === "foodQuestionnaire")?.answer;
+        const mapAnswersToToggle = (multipleAnswers as [])?.map((ans) => ({key: (ans as {label: string}).label, isToggled: true}));
+        setToggledButtons(mapAnswersToToggle);
+      }, [currentQuestion])
+
+      
+
+      const handleOptionClick = (option, label) => {
+        setToggledButtons(prevToggledBtns => {
+          const newToggledBtns = [...(prevToggledBtns || [])];
+          const existingBtnIndex = newToggledBtns.findIndex(btn => btn.key === label);
+          let isToggled = true; 
+          if(existingBtnIndex !== -1){
+            isToggled = !newToggledBtns[existingBtnIndex].isToggled;
+            newToggledBtns[existingBtnIndex].isToggled = isToggled;
+          }else{
+            newToggledBtns.push({
+              key: label,
+              isToggled: true
+            })
+          }
+          setQuestionnaireContext(prevQuestionnaire=>
+              updateQuestionnaire(prevQuestionnaire, currentQuestion, option, section, "select", currentQuestion.optionType, isToggled));
+          return newToggledBtns;
+        })
+      }
+      const handleTextFieldChange = (event, field) => {
+        setQuestionnaireContext(
+          prevQuestionnaire=>
+           updateQuestionnaire(prevQuestionnaire, currentQuestion, field, section, "textfield", currentQuestion.optionType, true ,event));
+      }
+      const onSubmitClick = async () => {
+        try {
+          const response = await fetch("/api/submit", {
+            method: "POST",
+            body:  JSON.stringify({id: session.user.id, ...questionnaireContext}),
+          });
+          console.log("response", response);
+        } catch (error) {
+          console.log(error);
+        }
+        finally {
+          redirect('result');
+        }
+      }
+
     return (
         <Box
           sx={{ 
@@ -74,21 +126,12 @@ export default function QuestionnaireSection({
                       sx={{ 
                         margin: "0.5rem", 
                         padding:"1rem", 
-                        bgcolor: "black", 
-                        color: "white",
-                        '&:focus': {
-                            backgroundColor: "white",
-                            border: "1px solid black",
-                            color: "black"
-                        } 
+                        bgcolor: selectedOptionIdx === index || Array.isArray(selectedOptionIdx) && selectedOptionIdx?.includes(index)? "white": "black", 
+                        color: selectedOptionIdx === index ||  Array.isArray(selectedOptionIdx) && selectedOptionIdx && selectedOptionIdx?.includes(index) ? "black": "white",
+                        border: selectedOptionIdx === index ||  Array.isArray(selectedOptionIdx) && selectedOptionIdx && selectedOptionIdx?.includes(index)? "1px solid black" : "none"
                       }} 
                       key={index}
-                      onClick={()=> setSelectedOption({
-                        id: currentQuestion.id,
-                        value: option.value,
-                        nextQuestionId: option.nextQuestionId,
-                        prevQuestionId: option.prevQuestionId,
-                      })}
+                      onClick={()=> handleOptionClick(option, option.label)}
                     >
                       <Typography>
                         {option.label}
@@ -103,31 +146,13 @@ export default function QuestionnaireSection({
                       variant="standard"
                       label={opt.label}
                       type="number"
-                      onChange={(e)=>
-                        setSelectedOption(prev => {
-                          if(prev?.id === currentQuestion.id){
-                            return {
-                                ...prev,
-                                value: {
-                                    ...(prev.value as { [key: string]: string }),
-                                    [opt.value]: e.target.value
-                                }
-                            };
-                          }
-                          return {
-                            id: currentQuestion.id,
-                            value: {
-                                [opt.value]: e.target.value
-                            },
-                            nextQuestionId: opt.nextQuestionId,
-                            prevQuestionId: opt.prevQuestionId,
-                          };
-                      })}
+                      onChange={(e)=>handleTextFieldChange(e, opt)}
                       slotProps={{
                         inputLabel: {
                           shrink: true,
                         },
-                    }}
+                      }}
+                      value={getTextFieldValue(questionnaireContext[section], currentQuestion, opt.value)}
                     />
                 ))
             }
@@ -136,7 +161,7 @@ export default function QuestionnaireSection({
               <Button 
                  sx={{paddingX: "1rem"}} 
                  variant="outlined" 
-                 onClick={()=>onPrevClick()} 
+                 onClick={()=>{setToggledButtons([]); onPrevClick()}} 
                  disabled={currentQuestion?.id === "q1" && questionnaireType === "FOOD"}
                  >
                Back
@@ -144,13 +169,24 @@ export default function QuestionnaireSection({
               <Button 
                  variant="contained" 
                  sx={{ paddingX: "1rem"}} 
-                 onClick={()=>onNextClick()}
+                 onClick={()=>{
+                  if(section === "shoppingQuestionnaire" && currentQuestion.id === "q5"){
+                    onSubmitClick()
+                  }else{
+                    setToggledButtons([]); 
+                    onNextClick()
+                  }
+                }}
                  >
-               Next
+               {section === "shoppingQuestionnaire" && currentQuestion.id === "q5" ? "Submit" : "Next"}
               </Button>
             </Box>
             {submitError && <Typography sx={{ padding: "1rem", textAlign: "center"}}>{optionNotSelectederr}</Typography>}
          </Box>
         </Box>
     )
+}
+
+function useContext(SessionContext: any) {
+  throw new Error("Function not implemented.");
 }

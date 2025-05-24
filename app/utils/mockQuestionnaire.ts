@@ -2,23 +2,41 @@ export const Questionnaire = {
   foodQuestionnaire: [
     {
       id: "q1",
-      question: "How would you best describe your diet?",
+      question: "What do you eat in a week?",
       options: [
         {
-          label: "Vegetarian",
-          value: "vegetarian",
+          label: "BEEF",
+          value: "beef",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "Non-Vegetarian",
-          value: "nonVegetarian",
+          label: "LAMB & MUTTON",
+          value: "meat",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
-          label: "Eggeterian",
-          value: "eggeterian",
+          label: "PORK",
+          value: "pork",
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "POULTRY",
+          value: "chicken",
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "SEA FOOD",
+          value: "seafood",
+          nextQuestionId: "q2",
+          prevQuestionId: null,
+        },
+        {
+          label: "DIARY PRODUCTS",
+          value: "diary",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
@@ -30,11 +48,13 @@ export const Questionnaire = {
         },
       ],
       answerType: "select",
+      optionType: "multiple",
     },
     {
       id: "q2",
       question:
         "In a week, how much do you spend on food from restaurants, canteens and takeaways?",
+      optionType: "single",
       options: [
         {
           label: "0$",
@@ -43,14 +63,14 @@ export const Questionnaire = {
           prevQuestionId: "q1",
         },
         {
-          label: "1$-10$",
-          value: "1$-10$",
+          label: "1$-20$",
+          value: "1$><20$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
-          label: "10$-50$",
-          value: "10$-50$",
+          label: "20$-50$",
+          value: "20$><50$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -66,27 +86,34 @@ export const Questionnaire = {
     {
       id: "q3",
       question: "Of the food you buy how much is wasted and thrown away?",
+      optionType: "single",
       options: [
         {
           label: "None",
-          value: "none",
+          value: "0%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "0%-10%",
-          value: "0%-10%",
+          value: "0%><10%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "10%-30%",
-          value: "10%-50%",
+          label: "10%-20%",
+          value: "10%><20%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "More than 30$",
+          label: "20%-30%",
+          value: "20%><30%",
+          nextQuestionId: "q4",
+          prevQuestionId: "q2",
+        },
+        {
+          label: "More than 30%",
           value: ">30%",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
@@ -97,22 +124,23 @@ export const Questionnaire = {
     {
       id: "q4",
       question:
-        "How often do you buy locally produced food that is not imported to the UK?",
+        "How often do you buy locally produced food that is not imported?",
+      optionType: "single",
       options: [
         {
-          label: "Local market",
-          value: "local_market",
+          label: "A lot of food that I buy is locally produced",
+          value: "local",
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
         {
-          label: "Food mart",
-          value: "food_mart",
+          label: "Some of the food that I buy is from grocery store",
+          value: "mall",
           nextQuestionId: null,
           prevQuestionId: "q3",
         },
         {
-          label: "Both",
+          label: "I don't worry about where my food comes from",
           value: "both",
           nextQuestionId: null,
           prevQuestionId: "q3",
@@ -126,6 +154,7 @@ export const Questionnaire = {
       id: "q1",
       question:
         "What kind of vehicle do you travel in most often as driver or passenger? (if any)?",
+      optionType: "single",
       options: [
         {
           label: "Car",
@@ -141,13 +170,13 @@ export const Questionnaire = {
         },
         {
           label: "Public transport",
-          value: "public_transport",
+          value: "bus",
           nextQuestionId: "q4",
           prevQuestionId: null,
         },
         {
           label: "Walk or Cycle",
-          value: "walk_cycle",
+          value: "walk",
           nextQuestionId: "q4",
           prevQuestionId: null,
         },
@@ -157,6 +186,7 @@ export const Questionnaire = {
     {
       id: "q2",
       question: "What is your car's fuel type?",
+      optionType: "single",
       options: [
         {
           label: "Petrol",
@@ -189,35 +219,36 @@ export const Questionnaire = {
       id: "q3",
       question:
         "How many hours a week do you spend in your car or on your motorbike for personal use including commuting?",
+      optionType: "single",
       options: [
         {
           label: "Under 2 hours",
-          value: "2hrs",
-          nextQuestionId: "q5",
+          value: "<2h",
+          nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "2 to 5 hours",
-          value: "2to5hrs",
-          nextQuestionId: "q5",
+          value: "2h><5h",
+          nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "5 to 15 hours",
-          value: "5to15hrs",
-          nextQuestionId: "q5",
+          value: "5h><15h",
+          nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "15 to 25 hours",
-          value: "15to25hrs",
-          nextQuestionId: "q5",
+          value: "15h><25h",
+          nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
           label: "Over 25 hours",
-          value: "25hrs",
-          nextQuestionId: "q5",
+          value: ">25h",
+          nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
       ],
@@ -227,40 +258,41 @@ export const Questionnaire = {
       id: "q4",
       question:
         "How many hours a week do you spend on the train for personal use including commuting?",
+      optionType: "single",
       options: [
         {
           label: "I don't travel by train",
-          value: "2hrs",
+          value: "0",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "under 2 hours",
-          value: "2to5hrs",
+          value: "<2h",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "2 to 5 hours",
-          value: "5to15hrs",
+          value: "2h><5h",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "5 to 15 hours",
-          value: "15to25hrs",
+          value: "5h><15h",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "15 to 25 hours",
-          value: "25hrs",
+          value: "15h><25h",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
         {
           label: "Over 25 hours",
-          value: "25hrs",
+          value: ">25h",
           nextQuestionId: "q5",
           prevQuestionId: "q1",
         },
@@ -271,22 +303,23 @@ export const Questionnaire = {
       id: "q5",
       question:
         "In the last year, how many return flights have you made in total to the following locations?",
+      optionType: "single",
       options: [
         {
-          label: "Domestic (UK / Ireland)",
+          label: "Domestic",
           value: "domestic",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
-          label: "To/from Europe",
-          value: "continent",
+          label: "To/from Continent",
+          value: "intra_continent",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
         {
-          label: "To/from outside Europe",
-          value: "international",
+          label: "To/from outside Continent",
+          value: "inter_continent",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },
@@ -296,6 +329,7 @@ export const Questionnaire = {
     {
       id: "q6",
       question: "What percentage of your flights do you offset?",
+      optionType: "single",
       options: [
         {
           label: "None of them",
@@ -335,6 +369,7 @@ export const Questionnaire = {
     {
       id: "q1",
       question: "What kind of house do you live in?",
+      optionType: "single",
       options: [
         {
           label: "Detached",
@@ -366,6 +401,7 @@ export const Questionnaire = {
     {
       id: "q2",
       question: "How many bedrooms does your house have?",
+      optionType: "single",
       options: [
         {
           label: "1",
@@ -397,6 +433,7 @@ export const Questionnaire = {
     {
       id: "q3",
       question: "How many people (aged 17 and over) live in your house?",
+      optionType: "single",
       options: [
         {
           label: "1",
@@ -428,6 +465,7 @@ export const Questionnaire = {
     {
       id: "q4",
       question: "How do you heat your home?",
+      optionType: "single",
       options: [
         {
           label: "Gas",
@@ -460,6 +498,7 @@ export const Questionnaire = {
       id: "q5",
       question:
         "Do you regularly turn off lights and not leave your appliances on standby?",
+      optionType: "single",
       options: [
         {
           label: "Yes",
@@ -479,6 +518,7 @@ export const Questionnaire = {
     {
       id: "q6",
       question: "How warm do you keep your home in winter?",
+      optionType: "single",
       options: [
         {
           label: "below 14 degree",
@@ -513,22 +553,23 @@ export const Questionnaire = {
       id: "q1",
       question:
         "In a typical month, how much do you spend on clothes and footwear?",
+      optionType: "single",
       options: [
         {
           label: "0$",
-          value: "0",
+          value: "0$",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "1$-60$",
-          value: "1-60",
+          value: "1$><60$",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
         {
           label: "60$-150$",
-          value: "terrace",
+          value: "60$><150$",
           nextQuestionId: "q2",
           prevQuestionId: null,
         },
@@ -545,16 +586,23 @@ export const Questionnaire = {
       id: "q2",
       question:
         "In a typical month, how much do you spend on health, beauty and grooming products?",
+      optionType: "single",
       options: [
         {
-          label: "1$",
-          value: "1",
+          label: "0$",
+          value: "0$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
         {
-          label: "1$ - 60$",
-          value: "1-60",
+          label: "1$-10$",
+          value: "1$><10$",
+          nextQuestionId: "q3",
+          prevQuestionId: "q1",
+        },
+        {
+          label: "10$ - 60$",
+          value: "10$><60$",
           nextQuestionId: "q3",
           prevQuestionId: "q1",
         },
@@ -570,29 +618,30 @@ export const Questionnaire = {
     {
       id: "q3",
       question:
-        "In a typical month, how much do you spend on phone, internet and TV contracts?",
+        "In a typical day, how much time do you spend on phone, internet and TV contracts?",
+      optionType: "single",
       options: [
         {
-          label: "0$",
-          value: "0",
+          label: "0 hour",
+          value: "0h",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "1$ - 35$",
-          value: "2",
+          label: "1 hour - 3 hour",
+          value: "1h><3h",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "35$ - 70$",
-          value: "35-70",
+          label: "3 hour - 5 hour",
+          value: "3h><5h",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
         {
-          label: "70$+",
-          value: ">=70$",
+          label: "5 hour - 7 hour",
+          value: "5h><7h",
           nextQuestionId: "q4",
           prevQuestionId: "q2",
         },
@@ -602,28 +651,35 @@ export const Questionnaire = {
     {
       id: "q4",
       question:
-        "In a typical month, how much do you spend on entertainment and hobbies (sports/gym, cinema, books, newspapers, gardening, computer games)",
+        "In a typical week, how much do you spend on entertainment and hobbies (sports/gym, cinema, books, newspapers, gardening, computer games)",
+      optionType: "single",
       options: [
         {
-          label: "0$ - 25$",
-          value: "0-25",
+          label: "0$",
+          value: "0$",
+          nextQuestionId: "q5",
+          prevQuestionId: "q3",
+        },
+        {
+          label: "1$ - 25$",
+          value: "1$><25$",
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
           label: "25$ - 50$",
-          value: "25-50",
+          value: "25$><50$",
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
           label: "50$ - 75$",
-          value: "50-75",
+          value: "50$><75$",
           nextQuestionId: "q5",
           prevQuestionId: "q3",
         },
         {
-          label: "75$+",
+          label: "More than 75$",
           value: ">75$",
           nextQuestionId: "q5",
           prevQuestionId: "q3",
@@ -634,6 +690,7 @@ export const Questionnaire = {
     {
       id: "q5",
       question: "Which of these types of waste do you recycle and/or compost?",
+      optionType: "multiple",
       options: [
         {
           label: "Food",
@@ -643,7 +700,7 @@ export const Questionnaire = {
         },
         {
           label: "Paper",
-          value: "Paper",
+          value: "paper",
           nextQuestionId: "q6",
           prevQuestionId: "q4",
         },

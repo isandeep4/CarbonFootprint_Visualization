@@ -1,5 +1,6 @@
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Box } from "@mui/material";
+import { TotalFootprint } from "./totalFootprint";
+import { Suspense, useContext } from "react";
 
 async function fetchFootprint() {
     const res = await fetch(
@@ -15,7 +16,10 @@ const Result = () => {
     const footprint = fetchFootprint();
     return (
         <Box>
-            <Typography>Your Carbon Footprint is: </Typography>
+            <Suspense fallback={<p>waiting for message...</p>}>
+                <TotalFootprint footprint={footprint} />
+            </Suspense>
         </Box>
     )
 }
+export default Result;
