@@ -102,7 +102,7 @@ export const Breakdown: FC<
                             <Typography>{`Your consumption is equal to ${Math.round(props[card.field])} Kg`}</Typography>
                             <Typography>{card.subTitle2}</Typography>
                             <Button 
-                              onClick={redirect(`result/${card.subRoute}`)}
+                              onClick={() => redirect(`result/${card.subRoute}`)}
                             >
                             {card.buttonText}
                             </Button>

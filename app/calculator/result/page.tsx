@@ -4,7 +4,7 @@ import { Suspense, useContext } from "react";
 
 async function fetchFootprint() {
     const res = await fetch(
-      "https://bsitydv6m5.execute-api.us-east-1.amazonaws.com/carbon-footprint-insights?user_id=isandeep",
+      "https://2doh6ahg6b.execute-api.us-east-1.amazonaws.com/carbon-footprint-insights?user_id=isandeep",
       { cache: 'no-store' }
     );
     const data = res.json();

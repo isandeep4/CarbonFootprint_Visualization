@@ -39,7 +39,7 @@ export const TotalFootprint: FC<{footprint: Promise<any>}> = ({footprint}) => {
                             <Image src={'/images/footprint.svg'} alt={'footprint image'} style={{ position: "absolute",  zIndex: 1, opacity: 0.5  }} width="400" height="500"/>
                         </Box>
                         <Typography variant="h4" sx={{ color: "black", zIndex: "999" }}>Your footprint is equal to</Typography>
-                        <Typography variant="h3" sx={{ color: "black", zIndex: "999", marginBottom: "2rem" }}>{parseFloat(data.total_emissions.toFixed(2))}kg</Typography>
+                        <Typography variant="h3" sx={{ color: "black", zIndex: "999", marginBottom: "2rem" }}>{parseFloat(data?.total_emissions?.toFixed(2))}kg</Typography>
                         <Button sx={{ bgcolor: "black",  zIndex: "2" }}>
                             <Typography>SHARE</Typography>
                         </Button>
