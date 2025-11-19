@@ -50,6 +50,7 @@ export default function RootLayout({
         },
       };
     }, []);
+    
     return (
       <html lang="en" data-toolpad-color-scheme="light">
         <body>
