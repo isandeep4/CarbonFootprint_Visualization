@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { Suspense } from "react"
 import './globals.css'
 import { NextAppProvider } from "@toolpad/core/nextjs/NextAppProvider"
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -53,6 +53,7 @@ export default function RootLayout({
     return (
       <html lang="en" data-toolpad-color-scheme="light">
         <body>
+          <Suspense fallback={<div>...Loading</div>}>
           <NextAppProvider
             session={session}
             authentication={authentication}
@@ -87,6 +88,7 @@ export default function RootLayout({
               </DashboardLayout>
             </ApolloProvider>
           </NextAppProvider>
+          </Suspense>
         </body>
       </html>
     )

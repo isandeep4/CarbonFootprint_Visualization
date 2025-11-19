@@ -6,7 +6,7 @@ import { Questionnaire } from "../../utils/mockQuestionnaire";
 import { getNextQuestion, getPreviousQuestion, getLastQuestionIdForSection, getNextSection, getProgressBarContext, getPrevSection, isFirstQuestionOfCurrentSection, resetProgressBar, getSelectedOption } from "../../utils/helper_functions";
 import QuestionnaireSection, { QuestionType } from "../QuestionnaireSection";
 
-export enum QuestionnaireSectionMapping {
+enum QuestionnaireSectionMapping {
     "foodQuestionnaire" = "FOOD",
     "travelQuestionnaire" = "TRAVEL",
     "homeQuestionnaire" = "HOME",

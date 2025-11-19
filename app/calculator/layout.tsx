@@ -2,9 +2,9 @@
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-export default function CalculatorLayout({children}: {children: React.ReactNode, contextValue: number}){
+export default function CalculatorLayout({children}: {children: React.ReactNode}){
     const [activeTabIndex, setActiveTabIndex] = useState(null);
     const pathName = usePathname();
     const tabList = [{label: "FOOD", value: "foodQuestionnaire"}, {label: "TRAVEL", value: "travelQuestionnaire"}, {label: "HOME", value: "homeQuestionnaire"}, {label: "SHOPPING", value: "shoppingQuestionnaire"}];
@@ -55,7 +55,10 @@ export default function CalculatorLayout({children}: {children: React.ReactNode,
               margin: "2rem",
             }}
             >
-            {children}
+              <Suspense fallback={<div>...Loading</div>}>
+                {children}
+              </Suspense>
+            
             </Box>
         </Box>
     )
