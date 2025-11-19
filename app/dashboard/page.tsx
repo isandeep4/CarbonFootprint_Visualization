@@ -38,7 +38,7 @@ export default function Dashboard(){
                 <Card>
                 <Typography sx={{ padding: "1rem"}}>Emissions Over Time:</Typography>
                     <CardContent>
-                    <PieChart
+                    {/* <PieChart
                         series={[
                             {
                             data: [
@@ -51,14 +51,14 @@ export default function Dashboard(){
                         ]}
                         width={400}
                         height={200}
-                    />
+                    /> */}
                     </CardContent>
                 </Card>
                     {/* emission breakdown */}
                 <Card>
                 <Typography sx={{ padding: "1rem"}}>Emission Breakdown:</Typography>
                     <CardContent>
-                    <LineChart
+                    {/* <LineChart
                         xAxis={[
                             {
                                 scaleType: "band",
@@ -73,7 +73,7 @@ export default function Dashboard(){
                         dataset={data?.UserCarbonDetails.carbonFootprints}
                         height= {300}
                         width={800}
-                    />
+                    /> */}
                     </CardContent>
                 </Card>
                 </Box>
