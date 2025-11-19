@@ -1,6 +1,6 @@
 "use client"
 import { Box, Card, CardContent, Typography } from "@mui/material";
-import { LineChart, PieChart } from '@mui/x-charts';
+// import { LineChart, PieChart } from '@mui/x-charts';
 import { useEffect, useState } from "react";
 import { colors, keyToLabel, mockMonthlyData } from "../utils/mockMonthlyData";
 import { useQuery } from "@apollo/client";
