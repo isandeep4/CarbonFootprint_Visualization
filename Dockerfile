@@ -8,21 +8,13 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install dependencies including devDependencies (for typescript, tailwind, etc.)
-RUN npm install
+RUN npm install -D @tailwindcss/postcss @emotion/react @emotion/styled typescript
 
 # Copy all project files
 COPY . .
 
 # Build the Next.js app for production
 RUN npm run build
-
-# Stage 2: Production image
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
-# Expose port 3000 for Next.js default
-EXPOSE 3000
 
 # Run the Next.js app in production mode
 CMD ["npm", "start"]
