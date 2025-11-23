@@ -278,34 +278,54 @@ export default function Dashboard() {
                 ...factor,
               };
 
-              // Add detail rows if factor is expanded
+              // Add detail rows if factor is expanded - two separate rows
               if (expandedFactorRows.has(factor.id || factorRowId)) {
+                // Use parent and factor names for sorting to keep detail rows together
+                const parentName = parentRow.name || '';
+                const factorName = factorRow.name || '';
+                
+                // First detail row: Description
                 factorRow.children.push({
-                  id: `${factorRowId}-detail`,
+                  id: `${factorRowId}-detail-description`,
                   parentId: factorRowId,
                   isDetailRow: true,
+                  detailType: 'description',
                   description: factor.description || 'N/A',
-                  constituent_gases: factor.constituent_gases,
+                  name: `${parentName}${factorName}__detail_desc`, // Include parent/factor names for sorting
+                });
+                
+                // Second detail row: Activity ID, Source, Year, etc.
+                factorRow.children.push({
+                  id: `${factorRowId}-detail-info`,
+                  parentId: factorRowId,
+                  isDetailRow: true,
+                  detailType: 'info',
+                  activity_id: factor.activity_id || 'N/A',
+                  source: factor.source || 'N/A',
                   source_dataset: factor.source_dataset || 'N/A',
                   source_link: factor.source_link || '',
+                  year: factor.year || 'N/A',
+                  year_released: (factor as any).year_released || 'N/A',
+                  region: factor.region || 'N/A',
+                  region_name: factor.region_name || 'N/A',
+                  unit: factor.unit || 'N/A',
+                  unit_type: factor.unit_type || 'N/A',
+                  scopes: factor.scopes?.join(', ') || 'N/A',
                   source_lca_activity: factor.source_lca_activity || 'N/A',
                   uncertainty: factor.uncertainty,
                   supported_calculation_methods: factor.supported_calculation_methods?.join(', ') || 'N/A',
                   data_quality_flags: factor.data_quality_flags || [],
-                  unit_type: factor.unit_type || 'N/A',
-                  year_released: (factor as any).year_released || 'N/A',
+                  constituent_gases: factor.constituent_gases,
+                  access_type: factor.access_type || 'N/A',
+                  name: `${parentName}${factorName}__detail_info`, // Include parent/factor names for sorting
                 });
               }
-
               parentRow.children.push(factorRow);
             });
           }
         }
 
         return parentRow;
-      })
-      .sort((a, b) => {
-        return (a.name || '').localeCompare(b.name || '');
       });
 
     return parentRows;
@@ -352,6 +372,9 @@ export default function Dashboard() {
       width: 500, 
       flex: 1,
       editable: false,
+      cellClassName: (params) => {
+        return params.row.isDetailRow ? 'detail-cell' : '';
+      },
       renderCell: (params) => {
         const isParent = params.row.isParent;
         const isChild = params.row.isChild;
@@ -371,102 +394,198 @@ export default function Dashboard() {
         }
 
         if (isDetailRow) {
-          // Detail row - show detailed information
-          return (
-            <Box sx={{ pl: 8, py: 1 }}>
-              <Box sx={{ mb: 1 }}>
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+          const detailType = params.row.detailType;
+          
+          // First subsection: Description
+          if (detailType === 'description') {
+            return (
+              <Box sx={{ 
+                pl: 8, 
+                py: 1.5,
+                width: '100%',
+                minWidth: 0,
+              }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 0.5, display: 'block' }}>
                   Description:
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 0.5, mb: 1 }}>
+                <Typography variant="body2" sx={{ lineHeight: 1.6, wordBreak: 'break-word' }}>
                   {params.row.description || 'N/A'}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, fontSize: '0.75rem' }}>
-                {params.row.source_dataset && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Source Dataset:</Typography>
-                    <Typography variant="body2">{params.row.source_dataset}</Typography>
+            );
+          }
+          
+          // Second subsection: Activity ID, Source, Year, etc.
+          if (detailType === 'info') {
+            return (
+              <Box sx={{ 
+                pl: 8, 
+                py: 1.5,
+                width: '100%',
+                minWidth: 0,
+              }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+                  {params.row.activity_id && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Activity ID:
+                      </Typography>
+                      <Typography variant="body2">{params.row.activity_id}</Typography>
+                    </Box>
+                  )}
+                  {params.row.source && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Source:
+                      </Typography>
+                      <Typography variant="body2">{params.row.source}</Typography>
+                    </Box>
+                  )}
+                  {params.row.source_dataset && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Source Dataset:
+                      </Typography>
+                      <Typography variant="body2">{params.row.source_dataset}</Typography>
+                    </Box>
+                  )}
+                  {params.row.year && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Year:
+                      </Typography>
+                      <Typography variant="body2">{params.row.year}</Typography>
+                    </Box>
+                  )}
+                  {params.row.year_released && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Year Released:
+                      </Typography>
+                      <Typography variant="body2">{params.row.year_released}</Typography>
+                    </Box>
+                  )}
+                  {params.row.region_name && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Region:
+                      </Typography>
+                      <Typography variant="body2">{params.row.region_name} ({params.row.region})</Typography>
+                    </Box>
+                  )}
+                  {params.row.unit && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Unit:
+                      </Typography>
+                      <Typography variant="body2">{params.row.unit}</Typography>
+                    </Box>
+                  )}
+                  {params.row.unit_type && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Unit Type:
+                      </Typography>
+                      <Typography variant="body2">{params.row.unit_type}</Typography>
+                    </Box>
+                  )}
+                  {params.row.scopes && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Scopes:
+                      </Typography>
+                      <Typography variant="body2">{params.row.scopes}</Typography>
+                    </Box>
+                  )}
+                  {params.row.source_lca_activity && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        LCA Activity:
+                      </Typography>
+                      <Typography variant="body2">{params.row.source_lca_activity}</Typography>
+                    </Box>
+                  )}
+                  {params.row.uncertainty !== null && params.row.uncertainty !== undefined && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Uncertainty:
+                      </Typography>
+                      <Typography variant="body2">{params.row.uncertainty}</Typography>
+                    </Box>
+                  )}
+                  {params.row.supported_calculation_methods && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Calculation Methods:
+                      </Typography>
+                      <Typography variant="body2">{params.row.supported_calculation_methods}</Typography>
+                    </Box>
+                  )}
+                  {params.row.access_type && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                        Access Type:
+                      </Typography>
+                      <Chip 
+                        label={params.row.access_type} 
+                        size="small" 
+                        color={params.row.access_type === 'premium' ? 'primary' : 'default'}
+                        variant="outlined"
+                      />
+                    </Box>
+                  )}
+                </Box>
+                
+                {params.row.constituent_gases && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                      Constituent Gases:
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {params.row.constituent_gases.co2e_total !== null && params.row.constituent_gases.co2e_total !== undefined && (
+                        <Chip label={`CO2e Total: ${params.row.constituent_gases.co2e_total}`} size="small" />
+                      )}
+                      {params.row.constituent_gases.co2 !== null && params.row.constituent_gases.co2 !== undefined && (
+                        <Chip label={`CO2: ${params.row.constituent_gases.co2}`} size="small" />
+                      )}
+                      {params.row.constituent_gases.ch4 !== null && params.row.constituent_gases.ch4 !== undefined && (
+                        <Chip label={`CH4: ${params.row.constituent_gases.ch4}`} size="small" />
+                      )}
+                      {params.row.constituent_gases.n2o !== null && params.row.constituent_gases.n2o !== undefined && (
+                        <Chip label={`N2O: ${params.row.constituent_gases.n2o}`} size="small" />
+                      )}
+                    </Box>
                   </Box>
                 )}
-                {params.row.source_lca_activity && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">LCA Activity:</Typography>
-                    <Typography variant="body2">{params.row.source_lca_activity}</Typography>
+                
+                {params.row.data_quality_flags && params.row.data_quality_flags.length > 0 && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                      Data Quality Flags:
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                      {params.row.data_quality_flags.map((flag: string, idx: number) => (
+                        <Chip key={idx} label={flag} size="small" color="warning" variant="outlined" />
+                      ))}
+                    </Box>
                   </Box>
                 )}
-                {params.row.unit_type && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Unit Type:</Typography>
-                    <Typography variant="body2">{params.row.unit_type}</Typography>
-                  </Box>
-                )}
-                {params.row.year_released && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Year Released:</Typography>
-                    <Typography variant="body2">{params.row.year_released}</Typography>
-                  </Box>
-                )}
-                {params.row.uncertainty !== null && params.row.uncertainty !== undefined && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Uncertainty:</Typography>
-                    <Typography variant="body2">{params.row.uncertainty}</Typography>
-                  </Box>
-                )}
-                {params.row.supported_calculation_methods && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Calculation Methods:</Typography>
-                    <Typography variant="body2">{params.row.supported_calculation_methods}</Typography>
+                
+                {params.row.source_link && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                      Source Link:
+                    </Typography>
+                    <Typography variant="body2">
+                      <a href={params.row.source_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', wordBreak: 'break-all' }}>
+                        {params.row.source_link}
+                      </a>
+                    </Typography>
                   </Box>
                 )}
               </Box>
-              {params.row.constituent_gases && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                    Constituent Gases:
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
-                    {params.row.constituent_gases.co2e_total !== null && (
-                      <Chip label={`CO2e Total: ${params.row.constituent_gases.co2e_total}`} size="small" />
-                    )}
-                    {params.row.constituent_gases.co2 !== null && (
-                      <Chip label={`CO2: ${params.row.constituent_gases.co2}`} size="small" />
-                    )}
-                    {params.row.constituent_gases.ch4 !== null && (
-                      <Chip label={`CH4: ${params.row.constituent_gases.ch4}`} size="small" />
-                    )}
-                    {params.row.constituent_gases.n2o !== null && (
-                      <Chip label={`N2O: ${params.row.constituent_gases.n2o}`} size="small" />
-                    )}
-                  </Box>
-                </Box>
-              )}
-              {params.row.data_quality_flags && params.row.data_quality_flags.length > 0 && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                    Data Quality Flags:
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
-                    {params.row.data_quality_flags.map((flag: string, idx: number) => (
-                      <Chip key={idx} label={flag} size="small" color="warning" variant="outlined" />
-                    ))}
-                  </Box>
-                </Box>
-              )}
-              {params.row.source_link && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                    Source Link:
-                  </Typography>
-                  <Typography variant="body2">
-                    <a href={params.row.source_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2' }}>
-                      {params.row.source_link}
-                    </a>
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          );
+            );
+          }
         }
 
         return (
@@ -516,7 +635,9 @@ export default function Dashboard() {
       width: 200,
       flex: 1,
       renderCell: (params) => {
-        if (params.row.isDetailRow) return null;
+        if (params.row.isDetailRow) {
+          return null;
+        }
         if (params.row.isChild && !params.row.category) return null;
         return <Typography variant="body2">{params.value || 'N/A'}</Typography>;
       },
@@ -688,13 +809,15 @@ export default function Dashboard() {
                 pagination: {
                   paginationModel: { pageSize: 25 },
                 },
-                sorting: {
-                  sortModel: [{ field: 'name', sort: 'asc' }],
-                },
               }}
+              disableColumnSorting={true}
+              getRowId={(row) => row.id}
+              disableRowSelectionOnClick={true}
+              isRowSelectable={(params) => !params?.row?.isDetailRow}
+              getRowHeight={() => null}
+              disableAutosize={false}
               pageSizeOptions={[10, 25, 50, 100]}
               checkboxSelection
-              disableRowSelectionOnClick
               getRowClassName={(params) => {
                 if (params.row.isDetailRow) {
                   return 'detail-row';
@@ -761,6 +884,14 @@ export default function Dashboard() {
                   borderLeft: '3px solid #90caf9',
                   '&:hover': {
                     backgroundColor: '#f0f0f0',
+                  },
+                  '& .MuiDataGrid-cell': {
+                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                    padding: '12px 16px',
+                  },
+                  '& .detail-cell': {
+                    width: '100%',
+                    maxWidth: 'none',
                   },
                 },
                 '& .MuiDataGrid-row:hover:not(.child-row):not(.factor-row):not(.detail-row)': {
