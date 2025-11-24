@@ -310,32 +310,6 @@ export default function Dashboard() {
                   access_type: factor.access_type || 'N/A',
                   name: `${parentName}${factorName}__detail_info`, // Include parent/factor names for sorting
                 });
-                
-                // Second detail row: Activity ID, Source, Year, etc.
-                // factorRow.children.push({
-                //   id: `${factorRowId}-detail-info`,
-                //   parentId: factorRowId,
-                //   isDetailRow: true,
-                //   detailType: 'info',
-                //   activity_id: factor.activity_id || 'N/A',
-                //   source: factor.source || 'N/A',
-                //   source_dataset: factor.source_dataset || 'N/A',
-                //   source_link: factor.source_link || '',
-                //   year: factor.year || 'N/A',
-                //   year_released: (factor as any).year_released || 'N/A',
-                //   region: factor.region || 'N/A',
-                //   region_name: factor.region_name || 'N/A',
-                //   unit: factor.unit || 'N/A',
-                //   unit_type: factor.unit_type || 'N/A',
-                //   scopes: factor.scopes?.join(', ') || 'N/A',
-                //   source_lca_activity: factor.source_lca_activity || 'N/A',
-                //   uncertainty: factor.uncertainty,
-                //   supported_calculation_methods: factor.supported_calculation_methods?.join(', ') || 'N/A',
-                //   data_quality_flags: factor.data_quality_flags || [],
-                //   constituent_gases: factor.constituent_gases,
-                //   access_type: factor.access_type || 'N/A',
-                //   name: `${parentName}${factorName}__detail_info`, // Include parent/factor names for sorting
-                // });
               }
               parentRow.children.push(factorRow);
             });
