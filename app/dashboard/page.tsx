@@ -286,21 +286,12 @@ export default function Dashboard() {
                 
                 // First detail row: Description
                 factorRow.children.push({
-                  id: `${factorRowId}-detail-description`,
-                  parentId: factorRowId,
-                  isDetailRow: true,
-                  detailType: 'description',
-                  description: factor.description || 'N/A',
-                  name: `${parentName}${factorName}__detail_desc`, // Include parent/factor names for sorting
-                });
-                
-                // Second detail row: Activity ID, Source, Year, etc.
-                factorRow.children.push({
                   id: `${factorRowId}-detail-info`,
                   parentId: factorRowId,
                   isDetailRow: true,
                   detailType: 'info',
-                  activity_id: factor.activity_id || 'N/A',
+                  description: factor.description || 'N/A',
+                   activity_id: factor.activity_id || 'N/A',
                   source: factor.source || 'N/A',
                   source_dataset: factor.source_dataset || 'N/A',
                   source_link: factor.source_link || '',
@@ -319,6 +310,32 @@ export default function Dashboard() {
                   access_type: factor.access_type || 'N/A',
                   name: `${parentName}${factorName}__detail_info`, // Include parent/factor names for sorting
                 });
+                
+                // Second detail row: Activity ID, Source, Year, etc.
+                // factorRow.children.push({
+                //   id: `${factorRowId}-detail-info`,
+                //   parentId: factorRowId,
+                //   isDetailRow: true,
+                //   detailType: 'info',
+                //   activity_id: factor.activity_id || 'N/A',
+                //   source: factor.source || 'N/A',
+                //   source_dataset: factor.source_dataset || 'N/A',
+                //   source_link: factor.source_link || '',
+                //   year: factor.year || 'N/A',
+                //   year_released: (factor as any).year_released || 'N/A',
+                //   region: factor.region || 'N/A',
+                //   region_name: factor.region_name || 'N/A',
+                //   unit: factor.unit || 'N/A',
+                //   unit_type: factor.unit_type || 'N/A',
+                //   scopes: factor.scopes?.join(', ') || 'N/A',
+                //   source_lca_activity: factor.source_lca_activity || 'N/A',
+                //   uncertainty: factor.uncertainty,
+                //   supported_calculation_methods: factor.supported_calculation_methods?.join(', ') || 'N/A',
+                //   data_quality_flags: factor.data_quality_flags || [],
+                //   constituent_gases: factor.constituent_gases,
+                //   access_type: factor.access_type || 'N/A',
+                //   name: `${parentName}${factorName}__detail_info`, // Include parent/factor names for sorting
+                // });
               }
               parentRow.children.push(factorRow);
             });
@@ -395,26 +412,6 @@ export default function Dashboard() {
 
         if (isDetailRow) {
           const detailType = params.row.detailType;
-          
-          // First subsection: Description
-          if (detailType === 'description') {
-            return (
-              <Box sx={{ 
-                pl: 8, 
-                py: 1.5,
-                width: '100%',
-                minWidth: 0,
-              }}>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 0.5, display: 'block' }}>
-                  Description:
-                </Typography>
-                <Typography variant="body2" sx={{ lineHeight: 1.6, wordBreak: 'break-word' }}>
-                  {params.row.description || 'N/A'}
-                </Typography>
-              </Box>
-            );
-          }
-          
           // Second subsection: Activity ID, Source, Year, etc.
           if (detailType === 'info') {
             return (
@@ -423,107 +420,117 @@ export default function Dashboard() {
                 py: 1.5,
                 width: '100%',
                 minWidth: 0,
+                display: "flex", flexDirection: "column", rowGap: 2
               }}>
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
-                  {params.row.activity_id && (
+                <Box>
+                {params.row.description && (
                     <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                      <Typography>
+                        {params.row.description || 'N/A'}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+                <Box>
+                  {params.row.activity_id && (
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Activity ID:
                       </Typography>
                       <Typography variant="body2">{params.row.activity_id}</Typography>
                     </Box>
                   )}
                   {params.row.source && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Source:
                       </Typography>
                       <Typography variant="body2">{params.row.source}</Typography>
                     </Box>
                   )}
                   {params.row.source_dataset && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Source Dataset:
                       </Typography>
                       <Typography variant="body2">{params.row.source_dataset}</Typography>
                     </Box>
                   )}
                   {params.row.year && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Year:
                       </Typography>
                       <Typography variant="body2">{params.row.year}</Typography>
                     </Box>
                   )}
                   {params.row.year_released && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Year Released:
                       </Typography>
                       <Typography variant="body2">{params.row.year_released}</Typography>
                     </Box>
                   )}
                   {params.row.region_name && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Region:
                       </Typography>
                       <Typography variant="body2">{params.row.region_name} ({params.row.region})</Typography>
                     </Box>
                   )}
                   {params.row.unit && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Unit:
                       </Typography>
                       <Typography variant="body2">{params.row.unit}</Typography>
                     </Box>
                   )}
                   {params.row.unit_type && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Unit Type:
                       </Typography>
                       <Typography variant="body2">{params.row.unit_type}</Typography>
                     </Box>
                   )}
                   {params.row.scopes && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Scopes:
                       </Typography>
                       <Typography variant="body2">{params.row.scopes}</Typography>
                     </Box>
                   )}
                   {params.row.source_lca_activity && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         LCA Activity:
                       </Typography>
                       <Typography variant="body2">{params.row.source_lca_activity}</Typography>
                     </Box>
                   )}
                   {params.row.uncertainty !== null && params.row.uncertainty !== undefined && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Uncertainty:
                       </Typography>
                       <Typography variant="body2">{params.row.uncertainty}</Typography>
                     </Box>
                   )}
                   {params.row.supported_calculation_methods && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Calculation Methods:
                       </Typography>
                       <Typography variant="body2">{params.row.supported_calculation_methods}</Typography>
                     </Box>
                   )}
                   {params.row.access_type && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Access Type:
                       </Typography>
                       <Chip 
@@ -534,10 +541,8 @@ export default function Dashboard() {
                       />
                     </Box>
                   )}
-                </Box>
-                
-                {params.row.constituent_gases && (
-                  <Box sx={{ mt: 2 }}>
+                  {params.row.constituent_gases && (
+                  <Box sx={{ mt: 2 }} display={"flex"}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
                       Constituent Gases:
                     </Typography>
@@ -557,9 +562,8 @@ export default function Dashboard() {
                     </Box>
                   </Box>
                 )}
-                
                 {params.row.data_quality_flags && params.row.data_quality_flags.length > 0 && (
-                  <Box sx={{ mt: 2 }}>
+                  <Box sx={{ mt: 2 }} display={"flex"}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
                       Data Quality Flags:
                     </Typography>
@@ -570,19 +574,7 @@ export default function Dashboard() {
                     </Box>
                   </Box>
                 )}
-                
-                {params.row.source_link && (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
-                      Source Link:
-                    </Typography>
-                    <Typography variant="body2">
-                      <a href={params.row.source_link} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', wordBreak: 'break-all' }}>
-                        {params.row.source_link}
-                      </a>
-                    </Typography>
-                  </Box>
-                )}
+                </Box>
               </Box>
             );
           }
@@ -802,7 +794,7 @@ export default function Dashboard() {
         {/* Data Grid */}
         {!loading && !error && data && (
           <Paper sx={{ height: 600, width: '100%' }}>
-            <DataGrid
+              <DataGrid
               rows={rows}
               columns={columns}
               initialState={{
@@ -814,7 +806,10 @@ export default function Dashboard() {
               getRowId={(row) => row.id}
               disableRowSelectionOnClick={true}
               isRowSelectable={(params) => !params?.row?.isDetailRow}
-              getRowHeight={() => null}
+              getRowHeight={(params) => {
+                const found = rows.find((r: any) => r.id === params.id);
+                return found && found.isDetailRow ? 400 : undefined;
+              }}
               disableAutosize={false}
               pageSizeOptions={[10, 25, 50, 100]}
               checkboxSelection
@@ -885,13 +880,17 @@ export default function Dashboard() {
                   '&:hover': {
                     backgroundColor: '#f0f0f0',
                   },
+                  // Ensure detail cells wrap and can expand vertically
                   '& .MuiDataGrid-cell': {
                     borderBottom: '1px solid rgba(224, 224, 224, 1)',
                     padding: '12px 16px',
+                    whiteSpace: 'normal',
+                    overflow: 'visible',
                   },
                   '& .detail-cell': {
                     width: '100%',
                     maxWidth: 'none',
+                    minWidth: 0,
                   },
                 },
                 '& .MuiDataGrid-row:hover:not(.child-row):not(.factor-row):not(.detail-row)': {
