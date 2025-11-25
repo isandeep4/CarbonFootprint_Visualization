@@ -1,5 +1,5 @@
 "use client"
-import { Box, Typography, Paper, CircularProgress, Alert, TextField, Button, Stack, Chip, IconButton } from "@mui/material";
+import { Box, Typography, Paper, CircularProgress, Alert, TextField, Button, Stack, Chip, IconButton, Autocomplete } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -89,6 +89,17 @@ export default function Dashboard() {
   const [expandedFactorRows, setExpandedFactorRows] = useState<Set<string>>(new Set());
   const [factorsCache, setFactorsCache] = useState<Map<string, FactorResult[]>>(new Map());
   const [loadingFactors, setLoadingFactors] = useState<Set<string>>(new Set());
+  
+  // Filter states
+  const [sector, setSector] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [year, setYear] = useState<string>('');
+  const [region, setRegion] = useState<string>('');
+  const [source, setSource] = useState<string>('');
+  const [unitType, setUnitType] = useState<string>('');
+  
+  // Possible filter options from API
+  const [possibleFilters, setPossibleFilters] = useState<any>(null);
 
   const fetchClimatiqData = async () => {
     setLoading(true);
@@ -97,9 +108,16 @@ export default function Dashboard() {
       // URL encode the data_version if it contains ^
       const encodedDataVersion = encodeURIComponent(dataVersion);
       const params = new URLSearchParams({
-        page: page.toString(),
         data_version: encodedDataVersion,
       });
+      
+      // Add filter parameters if they have values
+      if (sector) params.append('sector', sector);
+      if (category) params.append('category', category);
+      if (year) params.append('year', year);
+      if (region) params.append('region', region);
+      if (source) params.append('source', source);
+      if (unitType) params.append('unit_type', unitType);
       
       const response = await fetch(`/api/climatiq?${params}`);
       
@@ -110,6 +128,12 @@ export default function Dashboard() {
       
       const result = await response.json();
       setData(result);
+      
+      // Store possible_filters for filter dropdowns
+      if (result.possible_filters) {
+        setPossibleFilters(result.possible_filters);
+      }
+      
       // Reset expanded rows when data changes
       setExpandedRows(new Set());
       setFactorsCache(new Map());
@@ -132,9 +156,16 @@ export default function Dashboard() {
       const encodedDataVersion = encodeURIComponent(dataVersion);
       const params = new URLSearchParams({
         activity_id: activityId,
-        page: '1',
         data_version: encodedDataVersion,
       });
+      
+      // Add filter parameters if they have values
+      if (sector) params.append('sector', sector);
+      if (category) params.append('category', category);
+      if (year) params.append('year', year);
+      if (region) params.append('region', region);
+      if (source) params.append('source', source);
+      if (unitType) params.append('unit_type', unitType);
       
       const response = await fetch(`/api/climatiq/factors?${params}`);
       
@@ -199,7 +230,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchClimatiqData();
-  }, [page, dataVersion]);
+  }, [page, dataVersion, sector, category, year, region, source, unitType]);
 
   // Build hierarchical row structure with parent and children
   const buildHierarchicalRows = () => {
@@ -714,35 +745,120 @@ export default function Dashboard() {
 
         {/* Filters and Controls */}
         <Paper sx={{ p: 2 }}>
-          <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-            <TextField
-              label="Data Version"
-              value={dataVersion}
-              onChange={(e) => setDataVersion(e.target.value)}
-              size="small"
-              sx={{ minWidth: 150 }}
-              placeholder="^28"
-              helperText="e.g., ^28 or 27.27"
-            />
-            <TextField
-              label="Page"
-              type="number"
-              value={page}
-              onChange={(e) => setPage(parseInt(e.target.value) || 1)}
-              size="small"
-              sx={{ minWidth: 100 }}
-              inputProps={{ min: 1, max: data?.last_page || 1 }}
-            />
-            <Button 
-              variant="contained" 
-              onClick={handleRefresh}
-              disabled={loading}
-            >
-              Refresh
-            </Button>
+          <Stack spacing={2}>
+            {/* All filters in one row */}
+            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+              <TextField
+                label="Data Version"
+                value={dataVersion}
+                onChange={(e) => setDataVersion(e.target.value)}
+                size="small"
+                sx={{ minWidth: 150 }}
+                placeholder="^28"
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 200 }}
+                options={possibleFilters?.sector || []}
+                value={sector}
+                onChange={(_, newValue) => {
+                  setSector(newValue || '');
+                  setPage(1);
+                }}
+                renderInput={(params) => <TextField {...params} label="Sector" />}
+                freeSolo
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 200 }}
+                options={possibleFilters?.category || []}
+                value={category}
+                onChange={(_, newValue) => {
+                  setCategory(newValue || '');
+                  setPage(1);
+                }}
+                renderInput={(params) => <TextField {...params} label="Category" />}
+                freeSolo
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 150 }}
+                options={possibleFilters?.year?.map((y: number) => y.toString()) || []}
+                value={year}
+                onChange={(_, newValue) => {
+                  setYear(newValue || '');
+                  setPage(1);
+                }}
+                renderInput={(params) => <TextField {...params} label="Year" />}
+                freeSolo
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 200 }}
+                options={possibleFilters?.region?.map((r: any) => r.id) || []}
+                value={region}
+                onChange={(_, newValue) => {
+                  setRegion(newValue || '');
+                  setPage(1);
+                }}
+                getOptionLabel={(option) => {
+                  const regionObj = possibleFilters?.region?.find((r: any) => r.id === option);
+                  return regionObj ? `${regionObj.name} (${regionObj.id})` : option;
+                }}
+                renderInput={(params) => <TextField {...params} label="Region" />}
+                freeSolo
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 200 }}
+                options={possibleFilters?.source || []}
+                value={source}
+                onChange={(_, newValue) => {
+                  setSource(newValue || '');
+                  setPage(1);
+                }}
+                renderInput={(params) => <TextField {...params} label="Source" />}
+                freeSolo
+              />
+              <Autocomplete
+                size="small"
+                sx={{ minWidth: 200 }}
+                options={possibleFilters?.unit_type || []}
+                value={unitType}
+                onChange={(_, newValue) => {
+                  setUnitType(newValue || '');
+                  setPage(1);
+                }}
+                renderInput={(params) => <TextField {...params} label="Unit Type" />}
+                freeSolo
+              />
+              <Button 
+                variant="contained" 
+                onClick={handleRefresh}
+                disabled={loading}
+              >
+                Refresh
+              </Button>
+              <Button 
+                variant="outlined" 
+                onClick={() => {
+                  setSector('');
+                  setCategory('');
+                  setYear('');
+                  setRegion('');
+                  setSource('');
+                  setUnitType('');
+                  setPage(1);
+                }}
+                disabled={loading}
+              >
+                Clear Filters
+              </Button>
+            </Stack>
           </Stack>
+
           {data && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
               Page: {data.current_page || page} / {data.last_page || 'N/A'} | 
               Total Results: {data.total_results || 0} | 
               Showing: {data.results?.length || 0} results | 
