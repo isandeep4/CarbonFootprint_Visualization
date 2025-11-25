@@ -9,10 +9,25 @@ export async function GET(request: NextRequest) {
     // Default data_version is ^28 (URL encoded as %5E28)
     const dataVersion = searchParams.get('data_version') || '%5E28';
     const page = searchParams.get('page') || '1';
+    
+    // Get filter parameters
+    const sector = searchParams.get('sector');
+    const category = searchParams.get('category');
+    const year = searchParams.get('year');
+    const region = searchParams.get('region');
+    const source = searchParams.get('source');
+    const unitType = searchParams.get('unit_type');
 
     // Build URL with query parameters
-    // The data_version should be URL encoded if it contains ^
-    const url = `${CLIMATIQ_BASE_URL}/data/api/activities?page=${page}&data_version=${dataVersion}`;
+    let url = `${CLIMATIQ_BASE_URL}/data/api/activities?page=${page}&data_version=${dataVersion}`;
+    
+    // Add optional filters if provided
+    if (sector) url += `&sector=${sector}`;
+    if (category) url += `&category=${category}`;
+    if (year) url += `&year=${year}`;
+    if (region) url += `&region=${region}`;
+    if (source) url += `&source=${source}`;
+    if (unitType) url += `&unit_type=${unitType}`;
     
     const response = await fetch(url, {
       method: 'GET',
