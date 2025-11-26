@@ -1,6 +1,6 @@
 "use client"
-import { Box, Typography, Paper, CircularProgress, Alert, TextField, Button, Stack, Chip, IconButton, Autocomplete } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { Box, Typography, Paper, CircularProgress, Alert, TextField, Button, Stack, Chip, IconButton, Autocomplete, Grid } from "@mui/material";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowsProp } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import React from "react";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -97,6 +97,10 @@ export default function Dashboard() {
   const [region, setRegion] = useState<string>('');
   const [source, setSource] = useState<string>('');
   const [unitType, setUnitType] = useState<string>('');
+  const [paginationModel, setPaginationModel] = React.useState<GridPaginationModel>({
+    page: 0, // 0-based index for the current page
+    pageSize: 20,
+  });
   
   // Possible filter options from API
   const [possibleFilters, setPossibleFilters] = useState<any>(null);
@@ -109,6 +113,7 @@ export default function Dashboard() {
       const encodedDataVersion = encodeURIComponent(dataVersion);
       const params = new URLSearchParams({
         data_version: encodedDataVersion,
+        page: (paginationModel.page + 1).toString(),
       });
       
       // Add filter parameters if they have values
@@ -230,7 +235,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchClimatiqData();
-  }, [page, dataVersion, sector, category, year, region, source, unitType]);
+  }, [paginationModel.page, dataVersion, sector, category, year, region, source, unitType]);
 
   // Build hierarchical row structure with parent and children
   const buildHierarchicalRows = () => {
@@ -242,7 +247,8 @@ export default function Dashboard() {
         const aggregatedProps = item.aggregated_properties || {};
         const regions = aggregatedProps.region || [];
         const years = aggregatedProps.year || [];
-        const units = aggregatedProps.unit || [];
+        const unit = aggregatedProps.unit || [];
+        const unit_type = aggregatedProps.unit_type || [];
         const sources = aggregatedProps.source || [];
         
         const parentRow = {
@@ -251,7 +257,8 @@ export default function Dashboard() {
           name: item.name || aggregatedProps.name?.[0] || 'N/A',
           category: item.category || 'N/A',
           sector: item.sector || 'N/A',
-          unit: units.join(', ') || 'N/A',
+          unit: unit.join(', ') || 'N/A',
+          unit_type: unit_type.join(', ') || 'N/A',
           regions: regions.map(r => r.name).join(', ') || 'N/A',
           region_count: regions.length,
           year: years.length > 0 ? years.join(', ') : 'N/A',
@@ -294,6 +301,7 @@ export default function Dashboard() {
                 category: factor.category || 'N/A',
                 sector: factor.sector || 'N/A',
                 unit: factor.unit || 'N/A',
+                unit_type: factor.unit_type || 'N/A',
                 regions: factor.region_name || 'N/A',
                 year: factor.year || 'N/A',
                 source: factor.source || 'N/A',
@@ -333,6 +341,7 @@ export default function Dashboard() {
                   unit: factor.unit || 'N/A',
                   unit_type: factor.unit_type || 'N/A',
                   scopes: factor.scopes?.join(', ') || 'N/A',
+                  emission_factor: factor.factor || 'N/A',
                   source_lca_activity: factor.source_lca_activity || 'N/A',
                   uncertainty: factor.uncertainty,
                   supported_calculation_methods: factor.supported_calculation_methods?.join(', ') || 'N/A',
@@ -485,7 +494,7 @@ export default function Dashboard() {
                       <Typography variant="body2">{params.row.region_name} ({params.row.region})</Typography>
                     </Box>
                   )}
-                  {params.row.unit && (
+                  {/* {params.row.unit && (
                     <Box display={"flex"}>
                       <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Unit:
@@ -500,13 +509,21 @@ export default function Dashboard() {
                       </Typography>
                       <Typography variant="body2">{params.row.unit_type}</Typography>
                     </Box>
-                  )}
+                  )} */}
                   {params.row.scopes && (
                     <Box display={"flex"}>
                       <Typography variant="caption" color="text.secondary" fontWeight={600}>
                         Scopes:
                       </Typography>
                       <Typography variant="body2">{params.row.scopes}</Typography>
+                    </Box>
+                  )}
+                   {params.row.emission_factor && (
+                    <Box display={"flex"}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                        Emission Factor:
+                      </Typography>
+                      <Typography variant="body2">{params.row.emission_factor} {params.row.unit}</Typography>
                     </Box>
                   )}
                   {params.row.source_lca_activity && (
@@ -546,7 +563,7 @@ export default function Dashboard() {
                       />
                     </Box>
                   )}
-                  {params.row.constituent_gases && (
+                  {/* {params.row.constituent_gases && (
                   <Box sx={{ mt: 2 }} display={"flex"}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
                       Constituent Gases:
@@ -566,7 +583,7 @@ export default function Dashboard() {
                       )}
                     </Box>
                   </Box>
-                )}
+                )} */}
                 {params.row.data_quality_flags && params.row.data_quality_flags.length > 0 && (
                   <Box sx={{ mt: 2 }} display={"flex"}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
@@ -651,7 +668,7 @@ export default function Dashboard() {
       },
     },
     { 
-      field: 'unit', 
+      field: 'unit_type', 
       headerName: 'Unit', 
       width: 150,
       renderCell: (params) => {
@@ -703,32 +720,46 @@ export default function Dashboard() {
         return <Typography variant="body2">{params.value || 'N/A'}</Typography>;
       },
     },
-    { 
-      field: 'factor', 
-      headerName: 'Factor', 
-      width: 120,
-      type: 'number',
-      renderCell: (params) => {
-        if (params.row.isDetailRow) return null;
-        if (!params.row.isChild || params.value === null || params.value === undefined) return null;
-        return <Typography variant="body2" fontWeight={500}>{params.value}</Typography>;
-      },
-    },
-    { 
-      field: 'total_emission_factors', 
-      headerName: 'Total Factors', 
-      width: 120,
-      type: 'number',
-      renderCell: (params) => {
-        if (params.row.isDetailRow || params.row.isChild) return null;
-        return <Typography variant="body2">{params.value || 0}</Typography>;
-      },
-    },
+    // { 
+    //   field: 'factor', 
+    //   headerName: 'Factor', 
+    //   width: 120,
+    //   type: 'number',
+    //   renderCell: (params) => {
+    //     if (params.row.isDetailRow) return null;
+    //     if (!params.row.isChild || params.value === null || params.value === undefined) return null;
+    //     return <Typography variant="body2" fontWeight={500}>{params.value}</Typography>;
+    //   },
+    // },
+    // { 
+    //   field: 'total_emission_factors', 
+    //   headerName: 'Total Factors', 
+    //   width: 120,
+    //   type: 'number',
+    //   renderCell: (params) => {
+    //     if (params.row.isDetailRow || params.row.isChild) return null;
+    //     return <Typography variant="body2">{params.value || 0}</Typography>;
+    //   },
+    // },
   ];
 
   const handleRefresh = () => {
     fetchClimatiqData();
   };
+  // const totalPages = Math.ceil(data?.results?.length / paginationModel.pageSize);
+
+  const paginationDisplayedRows = React.useCallback(
+    ({ from, to, count }) => {
+      // Current page is 1-based (paginationModel.page is 0-based)
+      const currentPage = paginationModel.page + 1;
+      
+      // The default row information is still useful, so we include it.
+      // You can modify this string to only show the page count if preferred.
+      return `Page ${currentPage} of ${data.last_page || 'N/A'} (${from}–${to} of ${data.total_results ?? 'N/A'})`;
+    },
+    [paginationModel.page, data?.last_page],
+  );
+
 
   return (
     <Box sx={{ width: '100%', height: '100%', p: 3 }}>
@@ -744,57 +775,61 @@ export default function Dashboard() {
         </Box>
 
         {/* Filters and Controls */}
-        <Paper sx={{ p: 2 }}>
+        <Paper sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'background.paper' }}>
           <Stack spacing={2}>
-            {/* All filters in one row */}
-            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+            {/* Filters responsive grid */}
+            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" sx={{ gap: 2 }}>
               <TextField
                 label="Data Version"
                 value={dataVersion}
                 onChange={(e) => setDataVersion(e.target.value)}
                 size="small"
-                sx={{ minWidth: 150 }}
+                sx={{ minWidth: 150, flex: '0 1 180px' }}
                 placeholder="^28"
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 200, flex: '1 1 220px' }}
                 options={possibleFilters?.sector || []}
                 value={sector}
                 onChange={(_, newValue) => {
                   setSector(newValue || '');
                   setPage(1);
                 }}
-                renderInput={(params) => <TextField {...params} label="Sector" />}
+                renderInput={(params) => <TextField {...params} label="Sector" fullWidth />}
                 freeSolo
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 200, flex: '1 1 220px' }}
                 options={possibleFilters?.category || []}
                 value={category}
                 onChange={(_, newValue) => {
                   setCategory(newValue || '');
                   setPage(1);
                 }}
-                renderInput={(params) => <TextField {...params} label="Category" />}
+                renderInput={(params) => <TextField {...params} label="Category" fullWidth />}
                 freeSolo
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 150 }}
+                sx={{ minWidth: 120, flex: '0 1 140px' }}
                 options={possibleFilters?.year?.map((y: number) => y.toString()) || []}
                 value={year}
                 onChange={(_, newValue) => {
                   setYear(newValue || '');
                   setPage(1);
                 }}
-                renderInput={(params) => <TextField {...params} label="Year" />}
+                renderInput={(params) => <TextField {...params} label="Year" fullWidth />}
                 freeSolo
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 200, flex: '1 1 220px' }}
                 options={possibleFilters?.region?.map((r: any) => r.id) || []}
                 value={region}
                 onChange={(_, newValue) => {
@@ -805,55 +840,60 @@ export default function Dashboard() {
                   const regionObj = possibleFilters?.region?.find((r: any) => r.id === option);
                   return regionObj ? `${regionObj.name} (${regionObj.id})` : option;
                 }}
-                renderInput={(params) => <TextField {...params} label="Region" />}
+                renderInput={(params) => <TextField {...params} label="Region" fullWidth />}
                 freeSolo
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 200, flex: '1 1 220px' }}
                 options={possibleFilters?.source || []}
                 value={source}
                 onChange={(_, newValue) => {
                   setSource(newValue || '');
                   setPage(1);
                 }}
-                renderInput={(params) => <TextField {...params} label="Source" />}
+                renderInput={(params) => <TextField {...params} label="Source" fullWidth />}
                 freeSolo
+                fullWidth
               />
               <Autocomplete
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: 200, flex: '1 1 220px' }}
                 options={possibleFilters?.unit_type || []}
                 value={unitType}
                 onChange={(_, newValue) => {
                   setUnitType(newValue || '');
                   setPage(1);
                 }}
-                renderInput={(params) => <TextField {...params} label="Unit Type" />}
+                renderInput={(params) => <TextField {...params} label="Unit Type" fullWidth />}
                 freeSolo
+                fullWidth
               />
-              <Button 
-                variant="contained" 
-                onClick={handleRefresh}
-                disabled={loading}
-              >
-                Refresh
-              </Button>
-              <Button 
-                variant="outlined" 
-                onClick={() => {
-                  setSector('');
-                  setCategory('');
-                  setYear('');
-                  setRegion('');
-                  setSource('');
-                  setUnitType('');
-                  setPage(1);
-                }}
-                disabled={loading}
-              >
-                Clear Filters
-              </Button>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <Button 
+                  variant="contained" 
+                  onClick={handleRefresh}
+                  disabled={loading}
+                >
+                  Refresh
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  onClick={() => {
+                    setSector('');
+                    setCategory('');
+                    setYear('');
+                    setRegion('');
+                    setSource('');
+                    setUnitType('');
+                    setPage(1);
+                  }}
+                  disabled={loading}
+                >
+                  Clear Filters
+                </Button>
+              </Box>
             </Stack>
           </Stack>
 
@@ -887,11 +927,6 @@ export default function Dashboard() {
               <DataGrid
               rows={rows}
               columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { pageSize: 25 },
-                },
-              }}
               disableColumnSorting={true}
               getRowId={(row) => row.id}
               disableRowSelectionOnClick={true}
@@ -900,8 +935,13 @@ export default function Dashboard() {
                 const found = rows.find((r: any) => r.id === params.id);
                 return found && found.isDetailRow ? 400 : undefined;
               }}
+              paginationMode="server"
+              rowCount={data.total_results ?? 0}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              pageSizeOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+              localeText={{ paginationDisplayedRows }}
               disableAutosize={false}
-              pageSizeOptions={[10, 25, 50, 100]}
               checkboxSelection
               getRowClassName={(params) => {
                 if (params.row.isDetailRow) {
