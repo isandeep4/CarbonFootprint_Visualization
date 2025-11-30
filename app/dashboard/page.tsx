@@ -2,6 +2,7 @@
 import { Box, Typography, Paper, CircularProgress, Alert, TextField, Button, Stack, Chip, IconButton, Autocomplete, Grid } from "@mui/material";
 import { DataGrid, GridColDef, GridPaginationModel, GridRowsProp } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -89,6 +90,7 @@ export default function Dashboard() {
   const [expandedFactorRows, setExpandedFactorRows] = useState<Set<string>>(new Set());
   const [factorsCache, setFactorsCache] = useState<Map<string, FactorResult[]>>(new Map());
   const [loadingFactors, setLoadingFactors] = useState<Set<string>>(new Set());
+  const router = useRouter();
   
   // Filter states
   const [sector, setSector] = useState<string>('');
@@ -291,10 +293,9 @@ export default function Dashboard() {
           } else {
             // Add factor rows as children (with their own children for details)
             factors.forEach((factor, idx) => {
-              const factorRowId = `${parentRow.activity_id}-factor-${factor.id || idx}`;
+              // const factorRowId = `${parentRow.activity_id}-factor-${factor.id || idx}`;
               const factorRow = {
-                id: factorRowId,
-                factorId: factor.id,
+                id: factor.id,
                 activity_id: parentRow.activity_id,
                 parentId: parentRow.id,
                 name: factor.name || 'N/A',
@@ -318,15 +319,15 @@ export default function Dashboard() {
               };
 
               // Add detail rows if factor is expanded - two separate rows
-              if (expandedFactorRows.has(factor.id || factorRowId)) {
+              if (expandedFactorRows.has(factor.id)) {
                 // Use parent and factor names for sorting to keep detail rows together
                 const parentName = parentRow.name || '';
                 const factorName = factorRow.name || '';
                 
                 // First detail row: Description
                 factorRow.children.push({
-                  id: `${factorRowId}-detail-info`,
-                  parentId: factorRowId,
+                  id: `${factor.id}-detail-info`,
+                  parentId: factor.id,
                   isDetailRow: true,
                   detailType: 'info',
                   description: factor.description || 'N/A',
@@ -720,6 +721,44 @@ export default function Dashboard() {
         return <Typography variant="body2">{params.value || 'N/A'}</Typography>;
       },
     },
+    {
+      field: 'info',
+      headerName: 'Info',
+      width: 100,
+      renderCell: (params) => {
+        if (params.row.isDetailRow) return null;
+        
+        const isFactorRow = params.row.isFactorRow;
+        const isParent = params.row.isParent;
+        if (!isFactorRow && !isParent) return null;
+
+        const handleInfoClick = () => {
+          if (isFactorRow) {
+            const factorId = params.row.id || '';
+            const detailRow = rows.find((r: any) => r.id === params.id);
+            if (!detailRow) return;
+            sessionStorage.setItem(`factor-${factorId}`, JSON.stringify(detailRow));
+            router.push(`/emission-factor/${encodeURIComponent(factorId)}`);
+          } else if (isParent) {
+            const activityId = params.row.activity_id || '';
+            router.push(`/activity/${encodeURIComponent(activityId)}`);
+          }
+        };
+
+        return (
+          <Button 
+            size="small" 
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleInfoClick();
+            }}
+          >
+            Info
+          </Button>
+        );
+      },
+    },
     // { 
     //   field: 'factor', 
     //   headerName: 'Factor', 
@@ -742,6 +781,7 @@ export default function Dashboard() {
     //   },
     // },
   ];
+
 
   const handleRefresh = () => {
     fetchClimatiqData();
